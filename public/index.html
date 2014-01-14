@@ -1,29 +1,65 @@
 <html>
 <head>
 	<title></title>
+	<link rel="stylesheet" type="text/css" href="style.css">
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
 
-			window.socket = new WebSocket("ws://localhost:8888/ws");
+			window.socket = new WebSocket("ws://localhost:8880/ws");
 
 			var ws = window.socket;
+			
+			var frontierSize = 0;
+			var crawlSize = 0;
+			function increaseThread(){
+				function increase(elem, size){
+					var c = parseInt(elem.html())
+					var step = 13;
+					if(size - c > 100){
+						step = parseInt((size - c) / 8);
+						if(step < 0)
+							step = -step;
+					}
+					if (c < size){
+						c += step;
+						if(c > size)
+							c = size;
+					}else if (c > size){
+						c -= step;
+						if(c < size)
+							c = size;
+					}
+					elem.html(c);
+				}
+				increase($("#frontier-size"), frontierSize);
+				increase($("#crawl-size"), crawlSize);
+				setTimeout(increaseThread, 100);
+			}
+			setTimeout(increaseThread, 1)
 
 			function parseMessage(mes){
 				if(mes.action == 'remove frontier'){
-					$("#frontier item").filter(function(){
-						return mes.items.indexOf($(this).attr('data-item-id')) == 0
+					$("#frontier .item").filter(function(){
+						// console.log(mes.items.indexOf($(this).attr('data-item-id')))
+						return mes.items.indexOf(parseInt($(this).attr('data-item-id'))) != -1
 					}).remove()
 				} else if(mes.action == 'add frontier'){
 					for(var i = 0; i < mes.items.length; i++){
-						console.log("HERE")
 						var div = document.createElement('div');
 						$(div).addClass('item');
-						$(div).attr('data-item-id', mes.items[i].id)
+						$(div).attr('data-item-id', mes.items[i].page_id)
 						$(div).html(mes.items[i].url)
 						$('#frontier').append($(div));
 					}
+				}else if(mes.action == 'frontier size'){
+					frontierSize = mes.value;
+				}else if(mes.action == 'crawl size'){
+					crawlSize = mes.value;
+				}else if(mes.action == 'crawl current'){
+					$("#current-crawl").html(mes.page);
 				}
+
 			}
 
 			ws.onmessage = function(evt) {
@@ -54,6 +90,13 @@
 				})
 				ws.send(mes)
 			})
+
+			$("#crawl-toggle-btn").click(function(){
+				var mes = JSON.stringify({
+					action: 'toggle crawl'
+				})
+				ws.send(mes)
+			})
 		})
 
 
@@ -64,8 +107,15 @@
 	This is the page
 	<input id="crawl-start-text" type="text" value="http://en.wikipedia.org/wiki/Information_retrieval">
 	<button id="crawl-start-btn">Start Crawl</button>
+	<button id="crawl-toggle-btn">Toggle Crawl</button>
 	<div id="frontier">
-
+		Currently Crawling: <span id="current-crawl"></span>
+		</br>
+		Frontier Pages: <span id="frontier-size">0</span>
+		</br>
+		Crawled Pages: <span id="crawl-size">0</span>
 	</div>
+
+
 </body>
 </html>

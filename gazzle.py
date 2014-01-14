@@ -7,20 +7,27 @@ import threading
 import urllib2
 import json
 import re
+from pymongo import MongoClient
 from bs4 import BeautifulSoup
-
+from Queue import Queue
 
 class Gazzle(object):
 	def __init__(self, *args, **kwargs):
-		self.redis   = redis.Redis(host="localhost", port=6379)
 		self.sockets = []
-		self.crawl_lock = threading.RLock()
+
+		mongo_client = MongoClient('localhost', 27017)
+		self.mongo = mongo_client['gazzle']
+		self.mongo.drop_collection('pages')
+		self.pages = self.mongo['pages']
+
+		self.frontier = Queue()
+		self.crawlCount = 0
+		self.crawling = False
 		self.crawl_cond = threading.Condition()
 
-		self._clear_crawl()
+		self._start_crawl_thread(count = 3)
 
-		crawl_thread = threading.Thread(target=self._crawl)
-		crawl_thread.start()
+		
 
 	def add_socket(self, socket):
 		self.sockets.append(socket)
@@ -33,75 +40,87 @@ class Gazzle(object):
 		for socket in self.sockets:
 			socket.write_message(message)
 
-	def _clear_crawl(self):
-		self.crawl_cond.acquire()		
-		self.redis.delete('crawl:frontier')
-		self.redis.delete('crawl:pagemap')
-		self.redis.set('crawl:pagecount', 0)
-
-		keys = self.redis.keys('crawl:pages*')
-		for key in keys:
-			self.redis.delete(key)
-
-		self.crawl_cond.release()
-
+	def _start_crawl_thread(self, count = 1):
+		for x in range(count):
+			crawl_thread = threading.Thread(target=self._crawl, dae)
+			crawl_thread.setDaemon(True)
+			crawl_thread.start()	
 
 	def _crawl(self):
 		def extract_link(link, url):
 			href = link.get('href', '')
+			m = re.match('([^?]+)[?].*', unicode(href))
+			if m != None:
+				href = m.group(1)
 			if href == '':
 				return ''
+
 			# if 'https://' in href:
 			# 	return href.replace('https://', 'http://')
 			if re.match('#.*', href) != None:
 				return ''
-			elif 'http' not in href:
+			elif re.match('//.*', href):
+				return 'http:' + href
+			elif re.match('/.*', href):
 				m = re.match('(http://[0-9a-zA-Z.]+)/*', url)
+				# print("link %s %s going to %s" % (href, "",  ""))
 				return m.group(1) + href
+
 
 		while True:
 			self.crawl_cond.acquire()
-			while self.redis.llen('crawl:frontier') == 0:
+			while self.crawling:
 				self.crawl_cond.wait()
+			self.crawl_cond.release()
 
-			item_index = int(self.redis.lpop('crawl:frontier'))
-			item = self.redis.get('crawl:pages:%d:url' % item_index)
+			item_index = self.frontier.get(True)
+			item = self.pages.find_one({'page_id': item_index})
+			self._send_to_all(json.dumps({
+				'action': 'crawl current',
+				'page': item['url']
+			}))
 
-
-			page = urllib2.urlopen(item)
+			page = urllib2.urlopen(item['url'])
 			soup = BeautifulSoup(page.read())
 
 			title = soup.title.text
-			self.redis.hset('crawl:pages:%d:title' % item_index, item, title)
-
-			links = map(lambda link: extract_link(link, item), soup.find_all("a"))
+			body = soup.body.text
+			links = map(lambda link: extract_link(link, item['url']), soup.find_all("a"))
 			links = filter(lambda link: link != '' and link != None, links)
-			links = filter(lambda link: self.redis.hexists('crawler:pagemap', item) == 0, links)
+			links = filter(lambda link: link not in self.pageset, links)
 
-			print("Crawling %s found %d links" % (item, len(links)))
+			print("%s Crawling %s found %d links" % (threading.current_thread().name, item['url'], len(links)))
+
 			result_links = []
 			for link in links:
-				index = self.redis.incr('craw:pagecount')
-				self.redis.set('crawl:pages:%d:url' % index, link)
-				self.redis.rpush('crawl:pages:%d:links' % item_index, index)
-				self.redis.hset('crawl:pagemap', link, index)
-				self.redis.rpush('crawl:frontier', index)
-				result_links.append({'url': link, 'id': index})
+				page_id = len(self.pageset)
+				self.pages.insert({
+					'page_id': page_id,
+					'url': link
+				})
+				self.pageset.add(link)
+				self.frontier.put(page_id)
+				result_links.append({'url': link, 'page_id': page_id})
 
-			self.crawl_cond.release()
+			self.pages.update({'page_id': item_index}, {
+				'$push': {'links': {'$each': result_links}},
+				'$set':	{'title': title},
+				'$set': {'content': body},
+				'$set': {'crawled': True}
+			})
 
-			res = [
+			self.crawlCount += 1
+
+			self._send_to_all(json.dumps([
 				{
-					'action': 'remove frontier',
-					'items': [item_index],
+					'action': 'frontier size',
+					'value': self.frontier.qsize()
 				},
 				{
-					'action': 'add frontier',
-					'items': result_links,
+					'action': 'crawl size',
+					'value': self.crawlCount
 				},
-			]
-
-			self._send_to_all(json.dumps(res))
+			]))
 
 
 
@@ -110,15 +129,16 @@ class Gazzle(object):
 		if url == '':
 			url = 'http://en.wikipedia.org/wiki/Information_retrieval'
 
-		
-		self._clear_crawl()
+		self.pages.insert({
+			'page_id': 0,
+			'url': url,
+			'crawled': False
+		})	
+		self.pageset = {url}
+		self.frontier.put(0)
 
+	def toggle_crawl(self):
 		self.crawl_cond.acquire()
-		
-		self.redis.set('crawl:pagecount', 1)
-		self.redis.set('crawl:pages:1:url', url)
-		self.redis.hset('crawl:pagemap', url, 1)
-		self.redis.rpush('crawl:frontier', 1)
-
-		self.crawl_cond.notify()
+		self.crawling = not self.crawling
+		self.crawl_cond.notifyAll()
 		self.crawl_cond.release()

@@ -17,6 +17,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         if mes.get('action') == 'start crawl':
             url = mes.get('page', '')
             gazzle.start_crawl(url = url)
+        elif mes.get('action') == 'toggle crawl':
+            gazzle.toggle_crawl()
  
     def on_close(self):
         gazzle.remove_socket(self)
@@ -29,7 +31,7 @@ application = tornado.web.Application([
 if __name__ == "__main__":
     gazzle = Gazzle()
 
-    port = 8888
+    port = 8880
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(port)
 
