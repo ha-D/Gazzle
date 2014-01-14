@@ -6,7 +6,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 
-			window.socket = new WebSocket("ws://" + location.host + "/ws");
+			window.socket = new WebSocket("ws://" + location.hostname + ":8880/ws");
 
 			var ws = window.socket;
 			
