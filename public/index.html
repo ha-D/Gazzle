@@ -44,22 +44,19 @@
 						// console.log(mes.items.indexOf($(this).attr('data-item-id')))
 						return mes.items.indexOf(parseInt($(this).attr('data-item-id'))) != -1
 					}).remove()
-				} else if(mes.action == 'add frontier'){
-					for(var i = 0; i < mes.items.length; i++){
-						var div = document.createElement('div');
-						$(div).addClass('item');
-						$(div).attr('data-item-id', mes.items[i].page_id)
-						$(div).html(mes.items[i].url)
-						$('#frontier').append($(div));
-					}
 				}else if(mes.action == 'frontier size'){
 					frontierSize = mes.value;
 				}else if(mes.action == 'crawl size'){
 					crawlSize = mes.value;
 				}else if(mes.action == 'crawl current'){
 					$("#current-crawl").html(mes.page);
+				}else if(mes.action == 'crawl finished'){					
+					var div = document.createElement('div');
+					$(div).addClass('item');
+					$(div).attr('data-page-id', mes.page.page_id)
+					$(div).html(mes.page.url)
+					$('#crawled').prepend($(div));
 				}
-
 			}
 
 			ws.onmessage = function(evt) {
@@ -114,6 +111,9 @@
 		Frontier Pages: <span id="frontier-size">0</span>
 		</br>
 		Crawled Pages: <span id="crawl-size">0</span>
+		<div id="crawled">
+
+		</div>
 	</div>
 
 

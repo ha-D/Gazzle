@@ -42,7 +42,7 @@ class Gazzle(object):
 
 	def _start_crawl_thread(self, count = 1):
 		for x in range(count):
-			crawl_thread = threading.Thread(target=self._crawl, dae)
+			crawl_thread = threading.Thread(target=self._crawl)
 			crawl_thread.setDaemon(True)
 			crawl_thread.start()	
 
@@ -75,10 +75,11 @@ class Gazzle(object):
 
 			item_index = self.frontier.get(True)
 			item = self.pages.find_one({'page_id': item_index})
-			self._send_to_all(json.dumps({
-				'action': 'crawl current',
-				'page': item['url']
-			}))
+
+			# self._send_to_all(json.dumps({
+			# 	'action': 'crawl current',
+			# 	'page': item['url']
+			# }))
 
 			page = urllib2.urlopen(item['url'])
 			soup = BeautifulSoup(page.read())
@@ -112,6 +113,10 @@ class Gazzle(object):
 			self.crawlCount += 1
 
 			self._send_to_all(json.dumps([
+				{
+					'action': 'crawl finished',
+					'page': {'page_id': item_index, 'url': item['url'], 'link_count': len(links)}
+				},
 				{
 					'action': 'frontier size',
 					'value': self.frontier.qsize()
