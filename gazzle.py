@@ -35,7 +35,7 @@ class Gazzle(object):
 		self.index_lock = threading.RLock()
 
 		self.start_crawl_thread(count = 3)
-		self.start_index_thread(count = 1) # index writer doesn't support multithreading
+		self.start_index_thread() # index writer doesn't support multithreading
 
 
 	def _init_whoosh(self):
@@ -46,26 +46,28 @@ class Gazzle(object):
 
 
 	def _index(self):
-		lock = threading.RLock()
-		writer = None
-		need_commit = []
+		_ = {
+			'lock': threading.RLock(),
+			'writer': None,
+			'need_commit': [],
+		}
 
-		def flush():
+		def flush(_):
 			while True:
-				if len(need_commit) != 0 and writer != None:
-					lock.acquire()
-					writer.commit()
-					writer = None
-					need_tmp = need_commit
-					need_commit = []
-					lock.release()
+				if len(_['need_commit']) != 0 and _['writer'] != None:
+					_['lock'].acquire()
+					_['writer'].commit()
+					_['writer'] = None
+					need_tmp = _['need_commit']
+					_['need_commit'] = []
+					_['lock'].release()
 					self._send_to_all({
 						'action': 'index commit',
 						'pages': map(lambda x: {'page_id': x}, need_tmp)
 					})
 				time.sleep(5)
 
-		self._start_thread(target = flush)
+		self._start_thread(target = flush, kwargs={'_':_})
 
 		while True:
 			self.index_cond.acquire()
@@ -76,12 +78,12 @@ class Gazzle(object):
 			item_index = self.index_q.get(True)
 			item = self.pages.find_one({'page_id': item_index})
 
-			lock.acquire()
-			if writer == None:
-				writer = self.index.writer()
-			writer.add_document(title=item['title'], content=item['content'], url=item['url'])
-			need_commit.append(item_index)
-			lock.release()
+			_['lock'].acquire()
+			if _['writer'] == None:
+				_['writer'] = self.index.writer()
+			_['writer'].add_document(title=item['title'], content=item['content'], url=item['url'])
+			_['need_commit'].append(item_index)
+			_['lock'].release()
 
 			self._send_to_all({
 				'action': 'index page',
@@ -176,9 +178,9 @@ class Gazzle(object):
 		for socket in self.sockets:
 			socket.write_message(message)
 
-	def _start_thread(self, target, count=1):
+	def _start_thread(self, target, count=1, args=(), kwargs={}):
 		for x in range(count):
-			thread = threading.Thread(target=target)
+			thread = threading.Thread(target=target, args=args, kwargs=kwargs)
 			thread.setDaemon(True)
 			thread.start()	
 
