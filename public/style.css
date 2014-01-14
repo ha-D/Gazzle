@@ -1,0 +1,13 @@
+#frontier {
+	overflow-y: auto;
+	height: 400px;
+	border: 1px solid black;
+}
+
+.indexed{
+	background-color: yellow;
+}
+
+.indexed.commited{
+	background-color: green;
+}

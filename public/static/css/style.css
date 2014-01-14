@@ -1,0 +1,95 @@
+
+/*font-family: 'Alegreya Sans', sans-serif; other */
+/*font-family: 'Chango', cursive; header*/
+
+body{ 
+	background-image:url('../images/bg.jpg');
+	background-repeat:repeat; 
+	color: #333;
+	font-family: 'Alegreya Sans', sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+html, body{
+	height: 100%;
+}
+
+a{
+	text-decoration: none;
+	color: #108edc ;
+}
+
+a:hover{
+	color: #009CC3;
+}
+
+.center{
+	width: 80%;
+	margin: 0 auto;
+}
+.gaz-logo{
+	font-family: 'Chango', arial; 
+	margin-right: 3em;
+	font-size: 1.3em;
+
+}
+.gaz-logo h1{
+	color: black;
+}
+
+
+.gaz-logo h1 small{
+	color: #888;
+	font-size: 0.3em;
+}
+
+.main-menu, .gaz-logo{
+	display: inline-block;
+}
+
+.menu-item{
+	font-size: 1.2em;
+	margin-right: 1em;
+	color: #333;
+}
+
+.home-item .title h2{
+	font-family: 'Chango', arial; 
+}
+
+.main-content.home{
+	width: 100%;
+	margin: 0 auto;
+}
+
+.home-item{
+	padding: 1em;
+	width: 25%;
+	text-align: center;
+	height: 15em;
+	display: inline-block;
+	margin: 2em 1em 0 0;
+	position: relative;
+}
+
+.home-item .image{
+	font-size: 5em;
+}
+
+.home-item .button{
+	position: absolute;
+	bottom: 1.5em;
+	left: 30%;
+}
+
+
+.home-item:hover{
+    background: rgba(150, 150, 150, 0.1);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.home-item:hover .title{
+	color: #009CC3;
+}
