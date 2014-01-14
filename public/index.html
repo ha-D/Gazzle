@@ -1,0 +1,71 @@
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			window.socket = new WebSocket("ws://localhost:8888/ws");
+
+			var ws = window.socket;
+
+			function parseMessage(mes){
+				if(mes.action == 'remove frontier'){
+					$("#frontier item").filter(function(){
+						return mes.items.indexOf($(this).attr('data-item-id')) == 0
+					}).remove()
+				} else if(mes.action == 'add frontier'){
+					for(var i = 0; i < mes.items.length; i++){
+						console.log("HERE")
+						var div = document.createElement('div');
+						$(div).addClass('item');
+						$(div).attr('data-item-id', mes.items[i].id)
+						$(div).html(mes.items[i].url)
+						$('#frontier').append($(div));
+					}
+				}
+			}
+
+			ws.onmessage = function(evt) {
+				console.log("message received: " + evt.data)
+				mes = JSON.parse(evt.data);
+				if(mes instanceof Array)
+					for(var i = 0; i < mes.length; i++)
+						parseMessage(mes[i]);
+				else if(mes instanceof Object)
+					parseMessage(mes)
+			};
+
+			ws.onclose = function(evt) { console.log("Connection close"); };
+
+			ws.onopen = function(evt) { 
+				console.log("Connection Opened");
+			};
+
+			ws.onerror = function(evt){
+				console.log("Err")
+				console.log(evt)
+			}
+
+			$("#crawl-start-btn").click(function(){
+				var mes = JSON.stringify({
+					action: 'start crawl',
+					page: $('#crawl-start-text').val()
+				})
+				ws.send(mes)
+			})
+		})
+
+
+	</script>
+</head>
+
+<body>
+	This is the page
+	<input id="crawl-start-text" type="text" value="http://en.wikipedia.org/wiki/Information_retrieval">
+	<button id="crawl-start-btn">Start Crawl</button>
+	<div id="frontier">
+
+	</div>
+</body>
+</html>
