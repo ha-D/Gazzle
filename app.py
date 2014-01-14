@@ -19,6 +19,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             gazzle.start_crawl(url = url)
         elif mes.get('action') == 'toggle crawl':
             gazzle.toggle_crawl()
+        elif mes.get('action') == 'start index':
+            gazzle.toggle_index()
  
     def on_close(self):
         gazzle.remove_socket(self)

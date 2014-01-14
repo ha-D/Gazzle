@@ -39,6 +39,14 @@
 			setTimeout(increaseThread, 1)
 
 			function parseMessage(mes){
+				function pageAction(f){
+					if(mes.page !== undefined)
+						f(mes.page);
+					if(mes.pages !== undefined)
+						for(var i = 0; i < mes.pages.length; i++)
+							f(mes.pages[i]);
+				}
+
 				if(mes.action == 'remove frontier'){
 					$("#frontier .item").filter(function(){
 						// console.log(mes.items.indexOf($(this).attr('data-item-id')))
@@ -50,12 +58,25 @@
 					crawlSize = mes.value;
 				}else if(mes.action == 'crawl current'){
 					$("#current-crawl").html(mes.page);
-				}else if(mes.action == 'crawl finished'){					
-					var div = document.createElement('div');
-					$(div).addClass('item');
-					$(div).attr('data-page-id', mes.page.page_id)
-					$(div).html(mes.page.url)
-					$('#crawled').prepend($(div));
+				}else if(mes.action == 'crawl page'){	
+					pageAction(function(page){
+						var div = document.createElement('div');
+						$(div).addClass('item');
+						$(div).attr('id', 'item-' + mes.page.page_id)
+						$(div).attr('data-page-id', mes.page.page_id)
+						$(div).html(mes.page.url)
+						$('#crawled').prepend($(div));
+					});
+				}else if(mes.action == 'index page'){
+					pageAction(function(page){
+						var item = $("#item-"+mes.page.page_id);
+						item.addClass("indexed");
+					});
+				}else if(mes.action == 'index commit'){
+					pageAction(function(page){
+						var item = $("#item-"+mes.page.page_id);
+						item.addClass("commited");
+					});
 				}
 			}
 
@@ -81,19 +102,23 @@
 			}
 
 			$("#crawl-start-btn").click(function(){
-				var mes = JSON.stringify({
+				ws.send(JSON.stringify({
 					action: 'start crawl',
 					page: $('#crawl-start-text').val()
-				})
-				ws.send(mes)
+				}))
 			})
 
 			$("#crawl-toggle-btn").click(function(){
-				var mes = JSON.stringify({
+				ws.send(JSON.stringify({
 					action: 'toggle crawl'
-				})
-				ws.send(mes)
+				}))
 			})
+
+			$("#index-start-btn").click(function(){
+				ws.send(JSON.stringify({
+					action: 'start index'
+				}))
+			})			
 		})
 
 
@@ -102,9 +127,14 @@
 
 <body>
 	This is the page
-	<input id="crawl-start-text" type="text" value="http://en.wikipedia.org/wiki/Information_retrieval">
-	<button id="crawl-start-btn">Start Crawl</button>
-	<button id="crawl-toggle-btn">Toggle Crawl</button>
+	<div>
+		<input id="crawl-start-text" type="text" value="http://en.wikipedia.org/wiki/Information_retrieval">
+		<button id="crawl-start-btn">Start Crawl</button>
+		<button id="crawl-toggle-btn">Toggle Crawl</button>
+	</div>
+	<div>
+		<button id="index-start-btn">Start Index</button>
+	</div>
 	<div id="frontier">
 		Currently Crawling: <span id="current-crawl"></span>
 		</br>
