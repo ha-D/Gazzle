@@ -1,18 +1,10 @@
-import redis
-import celery
-from celery import current_app
-from celery.contrib.methods import task_method
-import time
-import threading
-import urllib2
-import json
-import re
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
 from Queue import Queue, LifoQueue
 from whoosh.index import create_in
 from whoosh.fields import *
-import os
+import os, re, time, threading, urllib2, json
+
 class Gazzle(object):
 	def __init__(self, *args, **kwargs):
 		self.sockets = []
@@ -139,7 +131,7 @@ class Gazzle(object):
 			self._send_to_all(json.dumps([
 				{
 					'action': 'crawl page',
-					'page': {'page_id': item_index, 'url': item['url'], 'link_count': len(links)}
+					'page': {'page_id': item_index, 'url': item['url'], 'link_count': len(links), 'title': title}
 				},
 				{
 					'action': 'frontier size',
