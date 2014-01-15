@@ -94,12 +94,64 @@ a:hover{
 	color: #009CC3;
 }
 
-.content {
-	min-height: 550px;
+
+.main-content.Crawler input{
+	width: 355px;
+	margin-top: 1em;
 }
 
-.footer {
-	min-height: 200px;
-	/*height: 200px;*/
-	background-color: black;
+.main-content .navigator{
+	margin-bottom: 2em;
+}
+
+.main-content .clr{
+	margin: 1em;
+}
+
+.clr{
+	clear: both;
+}
+
+.main-content.Crawler .segment{
+	line-height: 150%;
+	width: 99.7%;
+	overflow-y: auto;
+	height: 18em;
+	/*min-height: 12em;*/
+}
+
+.main-content{
+	position: relative;
+	z-index: 1;
+}
+
+.url-stats h4{
+	color: #108edc;
+}
+
+
+.url-stats{
+	position: absolute !important;
+	overflow-y: auto;
+	right: 0;
+	top: 3em;
+	height: 28.7em;
+	width: 30%
+}
+
+.url-stats .table{
+	text-align: center;
+	width: 100%;
+	height: auto;
+}
+
+.url-stats .table .checkmark{color: green;}
+.url-stats .table .remove{color: red;}
+
+.url-stats{
+	text-overflow:ellipsis;
+	z-index: 10;
+}
+.left-content{
+	width: 67%;
 }

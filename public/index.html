@@ -2,7 +2,7 @@
 
 <html>
 <head>
-	<title>Gazir | Home</title>
+	<title>Gazzle | Home</title>
 
 	<link rel="stylesheet" type="text/css" href="static/css/semantic.css">
 	<link rel="stylesheet" type="text/css" href="static/css/style.css">
@@ -21,7 +21,10 @@
 			$('.main-content').hide();
 			// if(req.params['name'] == 'crawler'){
 				var p = req.params['name'];
-				alert(p)
+				if(req.params['name'] != 'crawler')
+					$('.url-stats').show();
+				// alert(p)
+				document.title = 'Gazzle | '+p;
 				$('.main-content.'+p).show();
 
 		})
@@ -36,25 +39,27 @@
 			<div class="main-header">
 				<div class="center">
 					<div class="gaz-logo">
-						<a href=""><h1>GAZir<small>gaz Information Retrieval </small></h1></a>
+						<a href=""><h1>GAZzle<small> a gaz that's google! </small></h1></a>
 					</div>
 
 					<div class="main-menu">
-						<a class="menu-item" href="/parts/crawler">
+						<a class="menu-item" href="/parts/Crawler">
 							Crawler
 						</a>
-						<a class="menu-item" href="/parts/indexer">
+						<a class="menu-item" href="/parts/Indexer">
 							Indexer
 						</a>
-						<a class="menu-item" href="/parts/retriever">
+						<a class="menu-item" href="/parts/Retriever">
 							Retriever
 						</a>
 					</div>
+					<span>| <small>All rights reserved? Nah,enjoy fucker!</small></span>
+					
 				</div>
 			</div>
 			<div class="content">
 				<div class="center">
-					<div class="main-content home">
+					<div class="main-content home" style="display:block">
 						<div class="home-item">
 							<div class="image">
 								<i class="icon bug"></i>
@@ -89,18 +94,153 @@
 							</div>
 						</div>
 					</div>
-					<div class="main-content crawler" style="display:none">
-						I'm the crawler modafucka
+					<div class="main-content Crawler" style="display:none">
+						<div class="left-content">
+							<div class="navigator">
+								<div class="ui steps">
+								  <div class="ui active step">
+								    Crawling
+								  </div>
+								  <div class="ui step" onclick="window.location='/parts/Indexer'">
+								    Indexing
+								  </div>
+								  <div class="ui step" onclick="window.location='/parts/Retriever'">
+								    Search
+								  </div>
+								</div>
+							</div>
+							Here we crawl stuff.so where should we begin from?
+							<div class="clr"></div>
+							<label> URL: </label>
+							<div class="ui input inline">
+								<input type="text" value="http://en.wikipedia.org/wiki/Information_retrieval" />
+							</div>
+							<div class="ui button blue">
+								new crawl
+							</div>
+							<div class="ui button green">
+								start/pause
+							</div>
+							<div class="clr"></div>
+							<label> Status: </label>
+							<div class="ui raised segment">
+								<div class="">Currently Crawling: </div>
+								<div class="">No. Frontier pages:</div>
+								<div class="">No. Crawled pages:</div>
+							</div>
+							<div class="clr"></div>
+							Once Crawling is finished, you can use <a href="/parts/Indexer">index</a> results.
+						</div>
 					</div>
-					<div class="main-content indexer" style="display:none">
-						I'm the indexer Modafucka
+					<div class="main-content Indexer" style="display:none">
+						<div class="left-content">
+							<div class="navigator">
+								<div class="ui steps">
+								  <div class="ui step"  onclick="window.location='/parts/Crawler'">
+								    Crawling
+								  </div>
+								  <div class="ui active step">
+								    Indexing
+								  </div>
+								  <div class="ui step" onclick="window.location='/parts/Retriever'">
+								    Search
+								  </div>
+								</div>
+							</div>
+							<div class="clr"></div>
+							<span>Indexing is so fucking easy peasy,just click the goddamn button:</span>
+							<div class="clr"></div>
+							<div class="ui button blue">index MODAFUCKA</div>
+							<div class="clr"></div>
+							<span>Note: if there's not crawled url,so what's the point of indexing motherfucker?!</span><br />
+							<span>first you have to <a href="/parts/Crawler">crawl</a>. so get the hell outta here! </span>
+
+
+							<div class="url-stats ui segment raised" >
+							 <h4>Crawled URLs</h4>
+							 <table class="ui table segment">
+							 	<thead>
+							 		<tr>
+							 			<th>URL</th>
+							 			<th>Indexed?</th>
+							 		</tr>
+							 	</thead>
+							 	<tbody>
+							 		<tr>
+							 			<td>http://porn.comhttp://porn.comhttp://porn.comhttp://porn.com</td>
+							 			<td><i class="icon checkmark"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td>http://porn.org</td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td>http://porn.ir</td>
+							 			<td><div class="ui active inline mini loader"></div></td>
+							 		</tr>
+							 	</tbody>
+							 </table>
+						</div>
+						</div>
 					</div>
-					<div class="main-content retriever" style="display:none">
-						and I'mt the fucking retriever
+
+					<div class="main-content Retriever" style="display:none">
+						<div class="left-content">
+							<div class="navigator">
+								<div class="ui steps">
+								  <div class="ui step"  onclick="window.location='/parts/Crawler'">
+								    Crawling
+								  </div>
+								  <div class="ui step" onclick="window.location='/parts/Indexer'">
+								    Indexing
+								  </div>
+								  <div class="ui active step" >
+								    Search
+								  </div>
+								</div>
+							</div>
+							<div class="clr"></div>
+							<span>please, search something MOAFUCKA:</span>
+							<div class="ui icon input">
+							  <input type="text" placeholder="Search..." onKeydown="Javascript: if (event.keyCode==13) alert('fuck u');">
+							  <i class="search icon"></i>
+							</div>
+							<div class="clr"></div>
+							<span>Results:</span>
+							<ol>
+								<li><a href="#">http://porn.com</a></li>
+								<li><a href="#">http://porn.ir</a></li>
+								<li><a href="#">http://porn.org</a></li>
+							</ol>
+						
+						</div>
+						<div class="url-stats ui segment raised" >
+							 <h4>Crawled URLs</h4>
+							 <table class="ui table segment">
+							 	<thead>
+							 		<tr>
+							 			<th>URL</th>
+							 			<th>Indexed?</th>
+							 		</tr>
+							 	</thead>
+							 	<tbody>
+							 		<tr>
+							 			<td>http://porn.comhttp://porn.comhttp://porn.comhttp://porn.com</td>
+							 			<td><i class="icon checkmark"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td>http://porn.org</td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td>http://porn.ir</td>
+							 			<td><div class="ui active inline mini loader"></div></td>
+							 		</tr>
+							 	</tbody>
+							 </table>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="footer">
 			</div>
 		</div>
 	</div>
