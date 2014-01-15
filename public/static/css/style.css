@@ -9,6 +9,7 @@ body{
 	font-family: 'Alegreya Sans', sans-serif;
 	margin: 0;
 	padding: 0;
+	position: relative;
 }
 
 html, body{
@@ -20,7 +21,7 @@ a{
 	color: #108edc ;
 }
 
-a:hover{
+.main-menu .menu-item:hover, a:hover{
 	color: #009CC3;
 }
 
@@ -46,6 +47,9 @@ a:hover{
 
 .main-menu, .gaz-logo{
 	display: inline-block;
+}
+.main-menu{
+	margin-bottom: 2em;
 }
 
 .menu-item{
@@ -83,6 +87,9 @@ a:hover{
 	left: 30%;
 }
 
+a .home-item{
+	color: #333;
+}
 
 .home-item:hover{
     background: rgba(150, 150, 150, 0.1);
@@ -134,8 +141,9 @@ a:hover{
 	position: absolute !important;
 	overflow-y: auto;
 	right: 0;
-	top: 3em;
-	height: 28.7em;
+	top: 0;
+	height: auto;
+	min-height: 5em;
 	width: 30%
 }
 
@@ -154,4 +162,12 @@ a:hover{
 }
 .left-content{
 	width: 67%;
+}
+
+.other{
+	margin-top: 3em;
+}
+
+.search-input, .index-button{
+	margin: 1em 0 0 2em !important;
 }
