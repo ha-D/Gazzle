@@ -2,8 +2,9 @@ import tornado.httpserver
 import tornado.websocket
 import tornado.ioloop
 import tornado.web
-
+import tornado.autoreload
 import json
+from datetime import datetime
 from gazzle import Gazzle
 
 class WSHandler(tornado.websocket.WebSocketHandler):
@@ -20,7 +21,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         elif mes.get('action') == 'toggle crawl':
             gazzle.toggle_crawl()
         elif mes.get('action') == 'start index':
-            gazzle.toggle_index()
+            gazzle.toggle_index(state=True)
+        elif mes.get('action') == 'stop index':
+            gazzle.toggle_index(state=False)
  
     def on_close(self):
         gazzle.remove_socket(self)
@@ -33,10 +36,12 @@ application = tornado.web.Application([
 if __name__ == "__main__":
     gazzle = Gazzle()
 
-    port = 8880
+    port = 3300
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(port)
 
-    print("Running on port %d" % (port))
+    print("%s \tRunning on port %d" % (datetime.now(), port))
 
-    tornado.ioloop.IOLoop.instance().start()
+    io_loop = tornado.ioloop.IOLoop.instance()
+    tornado.autoreload.start(io_loop = io_loop, check_time=5000)
+    io_loop.start()

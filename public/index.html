@@ -120,18 +120,17 @@
 							<div class="ui input inline">
 								<input type="text" value="http://en.wikipedia.org/wiki/Information_retrieval" />
 							</div>
-							<div class="ui button blue">
+							<div id="crawl-start-btn" class="ui button blue">
 								new crawl
 							</div>
-							<div class="ui button green">
+							<div id="crawl-toggle-btn" class="ui button green">
 								start/pause
 							</div>
 							<div class="clr"></div>
 							<label> Status: </label>
 							<div class="ui raised segment">
-								<div class="">Currently Crawling: </div>
-								<div class="">No. Frontier pages:</div>
-								<div class="">No. Crawled pages:</div>
+								<div id="frontier-size" class="">No. Frontier pages:</div>
+								<div id="crawl-size" class="">No. Crawled pages:</div>
 							</div>
 							<div class="clr"></div>
 							Once Crawling is finished, you can use <a href="/Indexer">index</a> results.
@@ -140,7 +139,7 @@
 							<div class="clr"></div>
 							<span>Indexing is so fucking easy peasy,just click the goddamn button:</span>
 							<div class="clr"></div>
-							<div class="ui button blue index-button">index MODAFUCKA</div>
+							<div id="index-toggle-btn" data-toggle="start" class="ui button blue index-button">index MODAFUCKA</div>
 							<div class="clr"></div>
 							<span>Note: if there's not crawled url,so what's the point of indexing motherfucker?!</span><br />
 							<span>first you have to <a href="/Crawler">crawl</a>. so get the hell outta here! </span>

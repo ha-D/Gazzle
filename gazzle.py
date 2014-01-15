@@ -207,8 +207,11 @@ class Gazzle(object):
 		self.crawl_cond.notifyAll()
 		self.crawl_cond.release()
 
-	def toggle_index(self):
+	def toggle_index(self, state=None):
 		self.index_cond.acquire()
-		self.indexing = not self.indexing
+		if state == None:
+			self.indexing = not self.indexing
+		else:
+			self.indexing = state
 		self.index_cond.notifyAll()
 		self.index_cond.release()

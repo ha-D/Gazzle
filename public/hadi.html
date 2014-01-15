@@ -6,10 +6,8 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 
-			window.socket = new WebSocket("ws://" + location.hostname + ":8880/ws");
-
+			window.socket = new WebSocket("ws://" + location.hostname + ":3300/ws");
 			var ws = window.socket;
-			
 			var frontierSize = 0;
 			var crawlSize = 0;
 			function increaseThread(){

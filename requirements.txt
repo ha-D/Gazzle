@@ -1,5 +1,4 @@
 tornado
 pymongo
 whoosh
-urllib2
 BeautifulSoup4
