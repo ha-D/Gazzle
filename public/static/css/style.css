@@ -125,7 +125,7 @@ a .home-item{
 .main-content.Crawler .segment{
 	line-height: 150%;
 	width: 99.7%;
-	overflow-y: auto;
+	/*overflow-y: auto;*/
 	height: 18em;
 	/*min-height: 12em;*/
 }
@@ -142,7 +142,7 @@ a .home-item{
 
 .url-stats{
 	position: absolute !important;
-	/*overflow-y: auto;*/
+	overflow-y: auto;
 	right: 0;
 	top: 0;
 	max-height: 20em;
