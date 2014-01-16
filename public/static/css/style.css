@@ -142,7 +142,7 @@ a .home-item{
 
 .url-stats{
 	position: absolute !important;
-	overflow-y: auto;
+	/*overflow-y: auto;*/
 	right: 0;
 	top: 0;
 	max-height: 20em;

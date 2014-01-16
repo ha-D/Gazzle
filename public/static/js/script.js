@@ -169,14 +169,18 @@ gazzle.parseMessage = function(mes){
 	} else if(mes.action == 'search results'){
 		var resultList = $("#results");
 		resultList.html("");
-		for(var i = 0; i < mes.results.length; i++){
-			var li = $("<li>");
-			var a = $("<a>");
-			a.attr('href', mes.results[i].url);
-			a.html(mes.results[i].title);
-			li.html(a);
-			resultList.append(li);
-		}
+		if(mes.results)
+			for(var i = 0; i < mes.results.length; i++){
+				var li = $("<li>");
+				var a = $("<a>");
+				a.attr('href', mes.results[i].url);
+				a.html(mes.results[i].title);
+				li.html(a);
+				resultList.append(li);
+			}
+		else
+			resultList.html("<div class='ui error message'>Did not match any indexed document.</div>");
+		
 	} else if(mes.action == 'init'){
 		if(mes.pages !== undefined){
 			$('.table.page tbody').html('')
