@@ -35,7 +35,7 @@ gazzle.connect = function(reconnectTime){
 	var ws = gazzle.ws;
 
 	ws.onmessage = function(evt) {
-		// console.log("message received: " + evt.data)
+		console.log("message received: " + evt.data)
 		mes = JSON.parse(evt.data);
 		if(mes instanceof Array)
 			for(var i = 0; i < mes.length; i++)
