@@ -181,7 +181,7 @@ table th{
 }
 
 .table.wrap {
-	overflow-y: auto;
+	/*overflow-y: auto;*/
 	max-height: 350px;
 }
 
@@ -191,6 +191,11 @@ table th{
 
 .table.page .page.title{
 	text-align: left;
+	padding: 5px;
+}
+
+.table.page .page.index{
+	text-align: center;
 	padding: 5px;
 }
 
@@ -226,4 +231,12 @@ table th{
 .alert.stack .alert.success{
 	background-color: rgba(0, 250, 0, 0.7);
 	/*color: white;*/
+}
+
+#status{
+	color: green;
+}
+
+#status.error{
+	color: red;
 }

@@ -47,6 +47,8 @@ gazzle.connect = function(reconnectTime){
 	ws.onclose = function(evt) {
 		console.log("Connection Closed");
 		gazzle.error("Connection Closed");
+		$("#status").html("not connected");
+		$('#status').addClass("error");
 		setTimeout(function(){
 			gazzle.alert("Reconnecting in " + reconnectTime/1000 +" seconds...", '', reconnectTime);
 			setTimeout(function(){
@@ -58,6 +60,8 @@ gazzle.connect = function(reconnectTime){
 	ws.onopen = function(evt) { 
 		console.log("Connection Opened");
 		gazzle.success("Connected To GaZzle");
+		$("#status").html("connected");
+		$('#status').removeClass("error");
 	};
 
 	ws.onerror = function(evt){
@@ -114,14 +118,15 @@ gazzle.parseMessage = function(mes){
 		$(title).html(a);
 		$(title).addClass('page title ' + page.page_id);
 		$(index).addClass('page index status ' + page.page_id);
+		var icon = document.createElement('i');
 		if(page.indexed !== undefined && page.indexed == true){
 			$(index).attr('data-status', 'indexed');
-			var icon = document.createElement('i');
-			$(icon).addClass('icon checkmark');
-			$(index).html(icon);
+			$(icon).addClass('icon checkmark');	
 		}else{
 			$(index).attr('data-status', 'not indexed');
+			$(icon).addClass('icon remove');
 		}
+		$(index).html(icon);
 		$(index).attr('data-page', page.page_id);
 		$(tr).addClass('page ' + page.page_id);
 		$(tr).append(title);
@@ -207,7 +212,6 @@ $(function(){
 		if(state == 'not indexed'){
 			var icon = document.createElement('i');
 			$(icon).addClass('icon add');
-			// $(icon).attr('data-page', $(this).attr('data-page'));
 			$(this).html(icon);
 		}
 	})
@@ -215,7 +219,9 @@ $(function(){
 	$(".table.page").on('mouseleave', '.page.index.status', function(e){
 		var state = $(this).attr("data-status");
 		if(state == 'not indexed'){
-			$(this).html("");
+			var icon = document.createElement('i');
+			$(icon).addClass('icon remove');
+			$(this).html(icon);
 		}
 	})
 
