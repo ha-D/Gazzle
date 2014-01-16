@@ -20,14 +20,11 @@
                     this.generateRequestOnPageLoad = true;
         })
 		this.get('/:name', function(req){
-			// alert('here dige');
 			$('.main-menu .menu-item').css('color','#333');
 		 	$('.main-content').hide();
 		 	$('.left-content').hide();
 		 	$('.main-content.other').show();
 			var p = req.params['name'];
-			if(req.params['name'] != 'crawler')
-			// alert(p)
 			document.title = 'Gazzle | '+p;
 			$('.left-content.'+p).show();
 			$('.main-menu .'+p).css('color','#108edc');
@@ -35,7 +32,6 @@
 		this.get('/', function(req){
 			document.title = 'Gazzle | Home';
 			$('.main-menu .menu-item').css('color','#333');
-			$('.main-menu .menu-item:hover').css('color','#009CC3');
 		 	$('.main-content').hide();
 		 	$('.main-content.home').show();	
 		 })
@@ -83,7 +79,7 @@
 								<h2>Crawl</h2>
 							</div>
 							<div class="content">
-								crawl an stuff
+								crawl and stuff
 							</div>
 						</div></a>
 						<a href="/Indexer">
@@ -95,7 +91,7 @@
 								<h2>Index</h2>
 							</div>
 							<div class="content">
-								index an stuff
+								index and stuff
 							</div>
 						</div></a>
 						<a href="Retriever">					
@@ -107,24 +103,25 @@
 								<h2>Retrieve</h2>
 							</div>
 							<div class="content">
-								retrive an stuff
+								retrive and stuff
 							</div>
 						</div></a>
 					</div>
 					<div class="main-content other" style="display:none">
 						<div class="left-content Crawler" style="display:none">
 							<div class="clr"></div>
-							<span>Here we crawl stuff.so where should we begin from?</span>
+							<span>Here we crawl stuff.Give us a URL,and se what happens:</span>
 							<div class="clr"></div>
 							<label> URL: </label>
 							<div class="ui input inline">
 								<input type="text" value="http://en.wikipedia.org/wiki/Information_retrieval" />
 							</div>
-							<div id="crawl-start-btn" class="ui button blue">
+							<div class="clr"></div>
+							<div id="crawl-start-btn" class="ui button tiny blue">
 								new crawl
 							</div>
-							<div id="crawl-toggle-btn" class="ui button green">
-								start/pause
+							<div id="crawl-toggle-btn" class="ui button tiny green">
+								pause/resume
 							</div>
 							<div class="clr"></div>
 							<label> Status: </label>
@@ -133,30 +130,32 @@
 								<div id="crawl-size" class="">No. Crawled pages:</div>
 							</div>
 							<div class="clr"></div>
-							Once Crawling is finished, you can use <a href="/Indexer">index</a> results.
+							Once Crawling is finished, you can <a href="/Indexer">index</a> results.
 						</div>
 						<div class="left-content Indexer" style="display:none">
 							<div class="clr"></div>
-							<span>Indexing is so fucking easy peasy,just click the goddamn button:</span>
+							<span>Indexing is so easy peasy,just click the goddamn button:</span>
 							<div class="clr"></div>
-							<div id="index-toggle-btn" data-toggle="start" class="ui button blue index-button">index MODAFUCKA</div>
+							<div id="index-toggle-btn" data-toggle="start" class="ui button blue small index-button">index</div>
 							<div class="clr"></div>
-							<span>Note: if there's not crawled url,so what's the point of indexing motherfucker?!</span><br />
+							<span>Note: if there's not crawled url,so what's the point of indexing?!</span><br />
 							<span>first you have to <a href="/Crawler">crawl</a>. so get the hell outta here! </span>
 						</div>
 						<div class="left-content Retriever" style="display:none">
 							<div class="clr"></div>
-							<span>please, search something MOAFUCKA:</span><br />
+							<span>please, search something:</span>
+							<div class="clr"></div>
 							<div class="ui icon input search-input">
-							  <input type="text" placeholder="Search..." onKeydown="Javascript: if (event.keyCode==13) alert('fuck u');">
+							  <input type="text" placeholder="Search..." onKeydown="Javascript: if (event.keyCode==13) alert('search');">
 							  <i class="search icon"></i>
 							</div>
+
 							<div class="clr"></div>
 							<span>Results:</span>
 							<ol>
-								<li><a href="#">http://porn.com</a></li>
-								<li><a href="#">http://porn.ir</a></li>
-								<li><a href="#">http://porn.org</a></li>
+								<li><a href="#">http://test.com</a></li>
+								<li><a href="#">http://test.ir</a></li>
+								<li><a href="#">http://test.org</a></li>
 							</ol>
 						</div>
 
@@ -172,15 +171,67 @@
 							 	</thead>
 							 	<tbody>
 							 		<tr>
-							 			<td>http://porn.comhttp://porn.comhttp://porn.comhttp://porn.com</td>
+							 			<td><a href="#">http://test.comhttp://test.comhttp://test.comhttp://test.comhttp://test.comhttp://test.comhttp://test.comhttp://test.comhttp://test.com</a></td>
 							 			<td><i class="icon checkmark"></i></td>
 							 		</tr>
 							 		<tr>
-							 			<td>http://porn.org</td>
+							 			<td><a href="#">http://test.org</a></td>
 							 			<td><i class="icon remove"></i></td>
 							 		</tr>
 							 		<tr>
-							 			<td>http://porn.ir</td>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.org</a></td>
+							 			<td><i class="icon remove"></i></td>
+							 		</tr>
+							 		<tr>
+							 			<td><a href="#">http://test.ir</a></td>
 							 			<td><div class="ui active inline mini loader"></div></td>
 							 		</tr>
 							 	</tbody>
