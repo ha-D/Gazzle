@@ -1,6 +1,29 @@
 
 var gazzle = {}
 
+gazzle.alert = function(mes, type, time){
+	if(time === undefined){
+		time = 3000;
+	}
+	var alert = $("<div>");
+	alert.addClass('alert');
+	if (type !== undefined)
+		alert.addClass(type);
+	alert.html(mes);
+	$('.alert.stack').prepend(alert);
+	setTimeout(function(){
+		alert.remove();
+	}, time)
+}
+
+gazzle.error = function(mes){
+	gazzle.alert(mes, 'error');
+}
+
+gazzle.success = function(mes){
+	gazzle.alert(mes, 'success');
+}
+
 gazzle.connect = function(){
 	gazzle.ws = new WebSocket("ws://" + location.hostname + ":3300/ws");
 	gazzle.socket = gazzle.ws;
@@ -10,7 +33,7 @@ gazzle.connect = function(){
 	var ws = gazzle.ws;
 
 	ws.onmessage = function(evt) {
-		console.log("message received: " + evt.data)
+		// console.log("message received: " + evt.data)
 		mes = JSON.parse(evt.data);
 		if(mes instanceof Array)
 			for(var i = 0; i < mes.length; i++)
@@ -20,14 +43,21 @@ gazzle.connect = function(){
 	};
 
 	ws.onclose = function(evt) {
-		console.log("Connection close");
+		console.log("Connection Closed");
+		gazzle.error("Connection Closed");
+		setTimeout(function(){
+			gazzle.alert("Reconnecting...", '', 5000);
+			setTimeout(gazzle.connect, 7500);
+		}, 1000)
 	};
 
 	ws.onopen = function(evt) { 
 		console.log("Connection Opened");
+		gazzle.success("Connected To GaZzle");
 	};
 
 	ws.onerror = function(evt){
+		// gazzle.error("Error connecting to GaZzle");
 		console.log("Connection Error")
 		console.log(evt)
 	}
