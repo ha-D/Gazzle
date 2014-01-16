@@ -20,14 +20,11 @@
                     this.generateRequestOnPageLoad = true;
         })
 		this.get('/:name', function(req){
-			// alert('here dige');
 			$('.main-menu .menu-item').css('color','#333');
 		 	$('.main-content').hide();
 		 	$('.left-content').hide();
 		 	$('.main-content.other').show();
 			var p = req.params['name'];
-			if(req.params['name'] != 'crawler')
-			// alert(p)
 			document.title = 'Gazzle | '+p;
 			$('.left-content.'+p).show();
 			$('.main-menu .'+p).css('color','#108edc');
@@ -35,7 +32,6 @@
 		this.get('/', function(req){
 			document.title = 'Gazzle | Home';
 			$('.main-menu .menu-item').css('color','#333');
-			$('.main-menu .menu-item:hover').css('color','#009CC3');
 		 	$('.main-content').hide();
 		 	$('.main-content.home').show();	
 		 })
@@ -77,7 +73,7 @@
 				<div class="center">
 					<div class="main-content home" style="display:block">
 						<a href="/Crawler">
-						<div class="home-item">
+						<div class="home-item crawl">
 							<div class="image">
 								<i class="icon bug"></i>
 							</div>
@@ -85,11 +81,11 @@
 								<h2>Crawl</h2>
 							</div>
 							<div class="content">
-								crawl an stuff
+								crawl and stuff
 							</div>
 						</div></a>
 						<a href="/Indexer">
-						<div class="home-item">
+						<div class="home-item index">
 							<div class="image">
 								<i class="icon copy"></i>
 							</div>
@@ -97,11 +93,11 @@
 								<h2>Index</h2>
 							</div>
 							<div class="content">
-								index an stuff
+								index and stuff
 							</div>
 						</div></a>
-						<a href="Retriever">					
-						<div class="home-item">
+						<a href="/Retriever">					
+						<div class="home-item retrieve">
 							<div class="image">
 								<i class="icon search"></i>
 							</div>
@@ -109,24 +105,25 @@
 								<h2>Retrieve</h2>
 							</div>
 							<div class="content">
-								retrive an stuff
+								retrive and stuff
 							</div>
 						</div></a>
 					</div>
 					<div class="main-content other" style="display:none">
 						<div class="left-content Crawler" style="display:none">
 							<div class="clr"></div>
-							<span>Here we crawl stuff.so where should we begin from?</span>
+							<span>Here we crawl stuff.Give us a URL,and se what happens:</span>
 							<div class="clr"></div>
 							<label> URL: </label>
 							<div class="ui input inline">
 								<input type="text" value="http://en.wikipedia.org/wiki/Information_retrieval" />
 							</div>
-							<div id="crawl-start-btn" class="ui button blue">
+							<div class="clr"></div>
+							<div id="crawl-start-btn" class="ui button tiny blue">
 								new crawl
 							</div>
-							<div id="crawl-toggle-btn" class="ui button green">
-								start/pause
+							<div id="crawl-toggle-btn" class="ui button tiny green">
+								pause/resume
 							</div>
 							<div class="clr"></div>
 							<label> Status: </label>
@@ -141,27 +138,29 @@
 						</div>
 						<div class="left-content Indexer" style="display:none">
 							<div class="clr"></div>
-							<span>Indexing is so fucking easy peasy,just click the goddamn button:</span>
+							<span>Indexing is so easy peasy,just click the goddamn button:</span>
 							<div class="clr"></div>
-							<div id="index-toggle-btn" data-toggle="start" class="ui button blue index-button">index MODAFUCKA</div>
+							<div id="index-toggle-btn" data-toggle="start" class="ui button blue small index-button">index</div>
 							<div class="clr"></div>
-							<span>Note: if there's not crawled url,so what's the point of indexing motherfucker?!</span><br />
+							<span>Note: if there's not crawled url,so what's the point of indexing?!</span><br />
 							<span>first you have to <a href="/Crawler">crawl</a>. so get the hell outta here! </span>
 							<div id="index-clear-btn" class="ui button red index-button">Clear Index</div>
 						</div>
 						<div class="left-content Retriever" style="display:none">
 							<div class="clr"></div>
-							<span>please, search something MOAFUCKA:</span><br />
+							<span>please, search something:</span>
+							<div class="clr"></div>
 							<div class="ui icon input search-input">
 							  <input id="searchbox" type="text" placeholder="Search...">
 							  <i class="search icon"></i>
 							</div>
+
 							<div class="clr"></div>
 							<span>Results:</span>
-							<ol id="results">
-								<li><a href="#">http://porn.com</a></li>
-								<li><a href="#">http://porn.ir</a></li>
-								<li><a href="#">http://porn.org</a></li>
+							<ol>
+								<li><a href="#">http://test.com</a></li>
+								<li><a href="#">http://test.ir</a></li>
+								<li><a href="#">http://test.org</a></li>
 							</ol>
 						</div>
 

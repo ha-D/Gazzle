@@ -62,6 +62,9 @@ a{
 	font-family: 'Chango', arial; 
 }
 
+.home-item.crawl .image, .home-item.index .image{margin-left: 0.3em}
+.home-item.retrieve .image{margin-left: -0.6em}
+
 .main-content.home{
 	width: 100%;
 	margin: 0 auto;
@@ -102,7 +105,7 @@ a .home-item{
 }
 
 
-.main-content.Crawler input{
+.Crawler .input{
 	width: 355px;
 	margin-top: 1em;
 }
@@ -133,7 +136,7 @@ a .home-item{
 }
 
 .url-stats h4{
-	color: #108edc;
+	color: #00a65a;
 }
 
 
@@ -142,14 +145,19 @@ a .home-item{
 	overflow-y: auto;
 	right: 0;
 	top: 0;
-	height: auto;
+	max-height: 20em;
 	min-height: 5em;
-	width: 30%
+	width: 45%
+}
+
+table th{
+	text-align: center !important;
 }
 
 .url-stats .table{
-	text-align: center;
+	text-align: left;
 	width: 100%;
+	margin: 0 auto;
 	height: auto;
 }
 
@@ -161,7 +169,7 @@ a .home-item{
 	z-index: 10;
 }
 .left-content{
-	width: 67%;
+	width: 50%;
 }
 
 .other{
@@ -169,7 +177,7 @@ a .home-item{
 }
 
 .search-input, .index-button{
-	margin: 1em 0 0 2em !important;
+	margin: 0em 0 0 2em !important;
 }
 
 .table.wrap {

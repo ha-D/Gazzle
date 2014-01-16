@@ -190,12 +190,20 @@ $(function(){
 	gazzle.connect();
 	gazzle.startIncreaseThread();
 
+<<<<<<< HEAD
 	var ws = gazzle.socket;
 
 	$.each($('.url-stats td:not(:has(i)):not(:has(div))'), function(i, d){
 		if($(d).html().length > 20 )
 			$(d).attr('title', $(d).html());
 			$(d).html($(d).html().substring(0,20)+ '...');
+=======
+	$.each($('.url-stats td a'), function(i, d){
+		if($(d).text().length > 45 ){
+			$(d).attr('title', $(d).text());
+			$(d).text($(d).text().substring(0,45)+ '...');
+		}
+>>>>>>> 48e6a14abcb20dcf0f7bcac0c9125bf8d8f3edc3
 	});
 
 	$(".table.page").on('mouseenter', '.page.index.status', function(e){
