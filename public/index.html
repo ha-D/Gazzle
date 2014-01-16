@@ -129,10 +129,12 @@
 							<div class="clr"></div>
 							<label> Status: </label>
 							<div class="ui raised segment">
-								<div id="frontier-size" class="">No. Frontier pages:</div>
-								<div id="crawl-size" class="">No. Crawled pages:</div>
+								<div class="">No. Frontier pages: <span id="frontier-size">0</span></div>
+								<div class="">No. Crawled pages: <span id="crawl-size">0</span></div>
 							</div>
 							<div class="clr"></div>
+							<div id="frontier-clear-btn" class="ui button red index-button">Clear Frontier</div>
+							<div id="all-clear-btn" class="ui button red index-button">Clear All</div>
 							Once Crawling is finished, you can use <a href="/Indexer">index</a> results.
 						</div>
 						<div class="left-content Indexer" style="display:none">
@@ -143,17 +145,18 @@
 							<div class="clr"></div>
 							<span>Note: if there's not crawled url,so what's the point of indexing motherfucker?!</span><br />
 							<span>first you have to <a href="/Crawler">crawl</a>. so get the hell outta here! </span>
+							<div id="index-clear-btn" class="ui button red index-button">Clear Index</div>
 						</div>
 						<div class="left-content Retriever" style="display:none">
 							<div class="clr"></div>
 							<span>please, search something MOAFUCKA:</span><br />
 							<div class="ui icon input search-input">
-							  <input type="text" placeholder="Search..." onKeydown="Javascript: if (event.keyCode==13) alert('fuck u');">
+							  <input id="searchbox" type="text" placeholder="Search...">
 							  <i class="search icon"></i>
 							</div>
 							<div class="clr"></div>
 							<span>Results:</span>
-							<ol>
+							<ol id="results">
 								<li><a href="#">http://porn.com</a></li>
 								<li><a href="#">http://porn.ir</a></li>
 								<li><a href="#">http://porn.org</a></li>
@@ -162,29 +165,31 @@
 
 
 						<div class="url-stats ui segment raised">
-							 <h4>Crawled URLs</h4>
-							 <table class="ui table segment">
-							 	<thead>
-							 		<tr>
-							 			<th>URL</th>
-							 			<th>Indexed?</th>
-							 		</tr>
-							 	</thead>
-							 	<tbody>
-							 		<tr>
-							 			<td>http://porn.comhttp://porn.comhttp://porn.comhttp://porn.com</td>
-							 			<td><i class="icon checkmark"></i></td>
-							 		</tr>
-							 		<tr>
-							 			<td>http://porn.org</td>
-							 			<td><i class="icon remove"></i></td>
-							 		</tr>
-							 		<tr>
-							 			<td>http://porn.ir</td>
-							 			<td><div class="ui active inline mini loader"></div></td>
-							 		</tr>
-							 	</tbody>
-							 </table>
+							 <!-- <h4>Crawled URLs</h4> -->
+							 <div class="table wrap">
+								 <table class="ui table segment page">
+								 	<thead>
+								 		<tr>
+								 			<th>URL</th>
+								 			<th>Indexed?</th>
+								 		</tr>
+								 	</thead>
+								 	<tbody>
+								 		<!-- <tr>
+								 			<td class="page title">http://porn.comhttp://porn.comhttp://porn.comhttp://porn.com</td>
+								 			<td class="page index status"><i class="icon checkmark"></i></td>
+								 		</tr>
+								 		<tr>
+								 			<td class="page title">http://porn.org</td>
+								 			<td class="page index status"><i class="icon remove"></i></td>
+								 		</tr>
+								 		<tr>
+								 			<td class="page title">http://porn.ir</td>
+								 			<td class="page index status"><div class="ui active inline mini loader"></div></td>
+								 		</tr> -->
+								 	</tbody>
+								 </table>
+							</div>
 						</div>
 										
 					</div>

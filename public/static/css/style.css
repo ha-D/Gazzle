@@ -171,3 +171,22 @@ a .home-item{
 .search-input, .index-button{
 	margin: 1em 0 0 2em !important;
 }
+
+.table.wrap {
+	overflow-y: auto;
+	max-height: 350px;
+}
+
+/*thead > tr, tbody{
+    display:block;
+}*/
+
+.table.page .page.title{
+	text-align: left;
+	padding: 5px;
+}
+
+.table.page .icon.add {
+	color: green;
+	cursor: pointer;
+}
