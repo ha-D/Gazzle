@@ -62,6 +62,9 @@ a{
 	font-family: 'Chango', arial; 
 }
 
+.home-item.crawl .image, .home-item.index .image{margin-left: 0.3em}
+.home-item.retrieve .image{margin-left: -0.6em}
+
 .main-content.home{
 	width: 100%;
 	margin: 0 auto;
