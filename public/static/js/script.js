@@ -24,7 +24,9 @@ gazzle.success = function(mes){
 	gazzle.alert(mes, 'success');
 }
 
-gazzle.connect = function(){
+gazzle.connect = function(reconnectTime){
+	if(reconnectTime === undefined)
+		reconnectTime = 5000;
 	gazzle.ws = new WebSocket("ws://" + location.hostname + ":3300/ws");
 	gazzle.socket = gazzle.ws;
 	gazzle.frontierSize = 0;
@@ -46,8 +48,10 @@ gazzle.connect = function(){
 		console.log("Connection Closed");
 		gazzle.error("Connection Closed");
 		setTimeout(function(){
-			gazzle.alert("Reconnecting...", '', 5000);
-			setTimeout(gazzle.connect, 7500);
+			gazzle.alert("Reconnecting in " + reconnectTime/1000 +" seconds...", '', reconnectTime);
+			setTimeout(function(){
+				gazzle.connect(reconnectTime * 2);
+			}, reconnectTime + 2500);
 		}, 1000)
 	};
 
@@ -190,20 +194,12 @@ $(function(){
 	gazzle.connect();
 	gazzle.startIncreaseThread();
 
-<<<<<<< HEAD
 	var ws = gazzle.socket;
 
 	$.each($('.url-stats td:not(:has(i)):not(:has(div))'), function(i, d){
 		if($(d).html().length > 20 )
 			$(d).attr('title', $(d).html());
 			$(d).html($(d).html().substring(0,20)+ '...');
-=======
-	$.each($('.url-stats td a'), function(i, d){
-		if($(d).text().length > 45 ){
-			$(d).attr('title', $(d).text());
-			$(d).text($(d).text().substring(0,45)+ '...');
-		}
->>>>>>> 48e6a14abcb20dcf0f7bcac0c9125bf8d8f3edc3
 	});
 
 	$(".table.page").on('mouseenter', '.page.index.status', function(e){
