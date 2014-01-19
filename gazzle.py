@@ -17,7 +17,7 @@ class Gazzle(object):
 
 		self._init_whoosh()
 
-		self.pageset = set()
+		self.pageset = {}
 		self.frontier = Queue()
 		self.crawlCount = 0
 		self.crawling = False
@@ -34,17 +34,18 @@ class Gazzle(object):
 		self.index_lock = threading.RLock()
 		self._init_index()
 
-		self.start_crawl_thread(count = 3)
-		self.start_index_thread() # index writer doesn't support multithreading
-
+		self.pagerank_cond = threading.Condition()
+		self._start_thread(target = self._crawl, count = 3)
+		self._start_thread(target = self._index, count = 1) # index writer doesn't support multithreading
+		self._start_thread(target = self._pagerank, count = 1)
 		self._start_thread(target = self._assert_thread, count=1)
 
 
 	def _init_crawl(self):
-		self.pageset = set()
+		self.pageset = {}
 		self.frontier = Queue()
 		for page in self.pages.find():
-			self.pageset.add(page['url'])
+			self.pageset[page['url']] = page['page_id']
 		for page in self.pages.find({'crawled': False}):
 			self.frontier.put(page['page_id'])
 		self.crawlCount = self.pages.find({'crawled': True}).count()
@@ -79,6 +80,21 @@ class Gazzle(object):
 			assert a == None, 'Found inconsistent page in db ID: %d URL: %s' % (a['page_id'], a['url'])
 			time.sleep(1)
 
+	def _pagerank(self):
+		while True
+			with self.pagerank_cond:
+				self.pagerank_cond.wait()
+			pages = self.pages.find({'crawled': True, 'indexed': True}, {
+				'_id':False,
+				'page_id': True,
+				'content': False,
+				'links':True,
+				'links.url': False
+			})
+
+
+
+
 	def _index(self):
 		_ = {
 			'lock': threading.RLock(),
@@ -100,6 +116,8 @@ class Gazzle(object):
 						'pages': map(lambda x: {'page_id': x}, need_tmp)
 					})
 					self.pages.update({'page_id' : {'$in': need_tmp}}, {'$set':	{'indexed': True}}, multi = True, upsert = False)
+					with self.pagerank_cond:
+						self.pagerank_cond.notify()
 				time.sleep(5)
 
 		self._start_thread(target = flush, kwargs={'_':_})
@@ -169,7 +187,7 @@ class Gazzle(object):
 						'crawled': False,
 						'indexed': False
 					})
-					self.pageset.add(link)
+					self.pageset[link] = page_id
 					self.frontier.put(page_id)
 					result_links.append({'url': link, 'page_id': page_id})
 
@@ -274,11 +292,6 @@ class Gazzle(object):
 			thread.setDaemon(True)
 			thread.start()	
 
-	def start_index_thread(self, count = 1):
-		self._start_thread(target = self._index, count = count)
-
-	def start_crawl_thread(self, count = 1):
-		self._start_thread(target = self._crawl, count = count)
 
 	def add_socket(self, socket):
 		self.sockets.append(socket)
@@ -301,14 +314,15 @@ class Gazzle(object):
 			url = 'http://en.wikipedia.org/wiki/Information_retrieval'
 
 		with self.crawl_lock:
+			page_id =  len(self.pageset)
 			self.pages.insert({
-				'page_id': len(self.pageset),
+				'page_id': page_id,
 				'url': url,
 				'crawled': False,
 				'indexed': False
 			})	
 			self.frontier.put(len(self.pageset))
-			self.pageset.add(url)
+			self.pageset[url] = page_id
 		self.toggle_crawl(state = True)
 
 	def toggle_crawl(self, state=None):
