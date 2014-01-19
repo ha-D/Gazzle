@@ -105,11 +105,9 @@ class Gazzle(object):
 		self._start_thread(target = flush, kwargs={'_':_})
 
 		while True:
-			self.index_cond.acquire()
-			while not self.indexing:
-				self.index_cond.wait()
-			self.index_cond.release()
-
+			with self.index_cond:
+				while not self.indexing:
+					self.index_cond.wait()
 			try:
 				item_index = self.index_altq.get(False)
 				if self.index_alt_switchoff:
@@ -140,10 +138,9 @@ class Gazzle(object):
 
 	def _crawl(self):
 		while True:
-			self.crawl_cond.acquire()
-			while not self.crawling:
-				self.crawl_cond.wait()
-			self.crawl_cond.release()
+			with self.crawl_cond:
+				while not self.crawling:
+					self.crawl_cond.wait()
 
 			item_index = self.frontier.get(True)
 			item = self.pages.find_one({'page_id': item_index})
@@ -157,15 +154,9 @@ class Gazzle(object):
 			links = filter(lambda link: link != '' and link != None, links)
 
 			with self.crawl_lock:
-				the_link = 'http://en.wikipedia.org/w/index.php'
-				if the_link in links:
-					print("FOUND IT %d" %item_index)
-					print("Is it in pageset? %r" % (the_link in self.pageset))
-
 				# links = filter(lambda link: link not in self.pageset, links)
 
 				print("%s Crawling %s found %d links" % (threading.current_thread().name, item['url'], len(links)))
-				time.sleep(1)
 
 				result_links = []
 				for link in links:
@@ -321,26 +312,24 @@ class Gazzle(object):
 		self.toggle_crawl(state = True)
 
 	def toggle_crawl(self, state=None):
-		self.crawl_cond.acquire()
-		if state == None:
-			self.crawling = not self.crawling
-		else:
-			self.crawling = state
-		self.crawl_cond.notifyAll()
-		self.crawl_cond.release()
+		with self.crawl_cond:
+			if state == None:
+				self.crawling = not self.crawling
+			else:
+				self.crawling = state
+			self.crawl_cond.notifyAll()
 		self._send_to_all({
 			'action': 'init',
 			'crawling': self.crawling
 		})
 
 	def toggle_index(self, state=None):
-		self.index_cond.acquire()
-		if state == None:
-			self.indexing = not self.indexing
-		else:
-			self.indexing = state
-		self.index_cond.notifyAll()
-		self.index_cond.release()
+		with self.index_cond:
+			if state == None:
+				self.indexing = not self.indexing
+			else:
+				self.indexing = state
+			self.index_cond.notifyAll()
 		self._send_to_all({
 			'action': 'init',
 			'indexing': self.indexing
@@ -348,8 +337,7 @@ class Gazzle(object):
 
 	def index_page(self, page):
 		self.index_altq.put(page)
-		self.index_cond.acquire()
-		self.index_alt_switchoff = not self.indexing
-		self.indexing = True
-		self.index_cond.notifyAll()
-		self.index_cond.release()		
+		with self.index_cond:
+			self.index_alt_switchoff = not self.indexing
+			self.indexing = True
+			self.index_cond.notifyAll()
