@@ -37,6 +37,8 @@ class Gazzle(object):
 		self.start_crawl_thread(count = 3)
 		self.start_index_thread() # index writer doesn't support multithreading
 
+		self._start_thread(target = self._assert_thread, count=1)
+
 
 	def _init_crawl(self):
 		self.pageset = set()
@@ -44,7 +46,7 @@ class Gazzle(object):
 		for page in self.pages.find():
 			self.pageset.add(page['url'])
 		for page in self.pages.find({'crawled': False}):
-			self.frontier.put(page)
+			self.frontier.put(page['page_id'])
 		self.crawlCount = self.pages.find({'crawled': True}).count()
 		print('Added %d pages to page set' % len(self.pageset))
 		print('Added %d pages to frontier' % self.frontier.qsize())
@@ -69,6 +71,13 @@ class Gazzle(object):
 			self.index = create_in('index', schema)
 		else:
 			self.index = open_dir("index")
+
+
+	def _assert_thread(self):
+		while True:
+			a = self.pages.find_one({'crawled': True, 'title': {'$exists': False}})
+			assert a == None, 'Found inconsistent page in db ID: %d URL: %s' % (a['page_id'], a['url'])
+			time.sleep(1)
 
 	def _index(self):
 		_ = {
@@ -116,6 +125,8 @@ class Gazzle(object):
 			_['lock'].acquire()
 			if _['writer'] == None:
 				_['writer'] = self.index.writer()
+
+			assert item.get('title') != None , 'Uncrawled page in index queue, ID: %d, URL: %s' %(item['page_id'], item['url'])
 			_['writer'].add_document(page_id=item_index, title=item['title'], content=item['content'], url=item['url'])
 			_['need_commit'].append(item_index)
 			_['lock'].release()
@@ -145,34 +156,40 @@ class Gazzle(object):
 			links = map(lambda link: self.extract_anchor_link(link, item['url']), soup.find_all("a"))
 			links = filter(lambda link: link != '' and link != None, links)
 
-			self.crawl_lock.acquire()
+			with self.crawl_lock:
+				the_link = 'http://en.wikipedia.org/w/index.php'
+				if the_link in links:
+					print("FOUND IT %d" %item_index)
+					print("Is it in pageset? %r" % (the_link in self.pageset))
 
-			links = filter(lambda link: link not in self.pageset, links)
+				# links = filter(lambda link: link not in self.pageset, links)
 
-			print("%s Crawling %s found %d links" % (threading.current_thread().name, item['url'], len(links)))
+				print("%s Crawling %s found %d links" % (threading.current_thread().name, item['url'], len(links)))
+				time.sleep(1)
 
-			result_links = []
-			for link in links:
-				page_id = len(self.pageset)
-				self.pages.insert({
-					'page_id': page_id,
-					'url': link,
-					'crawled': False,
-					'indexed': False
-				})
-				self.pageset.add(link)
-				self.frontier.put(page_id)
-				result_links.append({'url': link, 'page_id': page_id})
+				result_links = []
+				for link in links:
+					if link in self.pageset:
+						continue
+					page_id = len(self.pageset)
+					self.pages.insert({
+						'page_id': page_id,
+						'url': link,
+						'crawled': False,
+						'indexed': False
+					})
+					self.pageset.add(link)
+					self.frontier.put(page_id)
+					result_links.append({'url': link, 'page_id': page_id})
+
+
+				self.crawlCount += 1
+				self.index_q.put(item_index)
 
 			self.pages.update({'page_id': item_index}, {
 				'$push': {'links': {'$each': result_links}},
 				'$set':	{'title': unicode(title), 'content': unicode(body), 'crawled': True}
 			})
-
-			self.crawlCount += 1
-			self.index_q.put(item_index)
-
-			self.crawl_lock.release()
 
 			self._send_to_all(json.dumps([
 				{
@@ -292,14 +309,15 @@ class Gazzle(object):
 		if url == '':
 			url = 'http://en.wikipedia.org/wiki/Information_retrieval'
 
-		self.pages.insert({
-			'page_id': len(self.pageset),
-			'url': url,
-			'crawled': False,
-			'indexed': False
-		})	
-		self.frontier.put(len(self.pageset))
-		self.pageset.add(url)
+		with self.crawl_lock:
+			self.pages.insert({
+				'page_id': len(self.pageset),
+				'url': url,
+				'crawled': False,
+				'indexed': False
+			})	
+			self.frontier.put(len(self.pageset))
+			self.pageset.add(url)
 		self.toggle_crawl(state = True)
 
 	def toggle_crawl(self, state=None):
@@ -310,6 +328,10 @@ class Gazzle(object):
 			self.crawling = state
 		self.crawl_cond.notifyAll()
 		self.crawl_cond.release()
+		self._send_to_all({
+			'action': 'init',
+			'crawling': self.crawling
+		})
 
 	def toggle_index(self, state=None):
 		self.index_cond.acquire()
@@ -319,6 +341,10 @@ class Gazzle(object):
 			self.indexing = state
 		self.index_cond.notifyAll()
 		self.index_cond.release()
+		self._send_to_all({
+			'action': 'init',
+			'indexing': self.indexing
+		})
 
 	def index_page(self, page):
 		self.index_altq.put(page)

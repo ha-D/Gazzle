@@ -180,6 +180,10 @@ table th{
 	margin: 0em 0 0 2em !important;
 }
 
+#crawl-status{
+	margin-bottom: 10px;
+}
+
 .table.wrap {
 	/*overflow-y: auto;*/
 	max-height: 350px;

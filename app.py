@@ -9,6 +9,7 @@ from gazzle import Gazzle
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
+        print('connection opened')
         gazzle.add_socket(self)
       
     def on_message(self, message):

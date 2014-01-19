@@ -60,6 +60,7 @@ gazzle.connect = function(reconnectTime){
 	ws.onopen = function(evt) { 
 		console.log("Connection Opened");
 		gazzle.success("Connected To GaZzle");
+		reconnectTime = 5000;
 		$("#status").html("connected");
 		$('#status').removeClass("error");
 	};
@@ -94,9 +95,9 @@ gazzle.startIncreaseThread = function(){
 		}
 		increase($("#frontier-size"), gazzle.frontierSize);
 		increase($("#crawl-size"), gazzle.crawlSize);
-		setTimeout(increaseThread, 100);
+		// setTimeout(increaseThread, 100);
 	}
-	setTimeout(increaseThread, 1)
+	setInterval(increaseThread, 100)
 }
 
 gazzle.parseMessage = function(mes){
@@ -194,16 +195,27 @@ gazzle.parseMessage = function(mes){
 			gazzle.crawlSize = mes.crawl_size;
 			$("#crawl-size").html(gazzle.crawlSize);
 		}
-		if(mes.indexing !== undefined && mes.indexing == true){
-			// TODO
+		if(mes.indexing !== undefined){
+			if(mes.indexing){
+				$("#index-toggle-btn").html("Pause Indexing");
+			}else{
+				$("#index-toggle-btn").html("Resume Indexing");
+			}
+		}
+		if(mes.crawling !== undefined){
+			if(mes.crawling){
+				$("#crawl-toggle-btn").html("Pause Crawling");
+				$("#crawl-status").html("Crawling...");
+			}else{
+				$("#crawl-status").html("Crawling Paused");
+				$("#crawl-toggle-btn").html("Resume Crawling");
+			}
 		}
 	}
 }
 $(function(){
 	gazzle.connect();
 	gazzle.startIncreaseThread();
-
-	var ws = gazzle.socket;
 
 	$.each($('.url-stats td:not(:has(i)):not(:has(div))'), function(i, d){
 		if($(d).html().length > 20 )
@@ -232,7 +244,7 @@ $(function(){
 	$(".table.page").on('click', '.page.index.status .icon.add', function(e){
 		var index = $(this).parent();
 		var page = index.attr('data-page');
-		ws.send(JSON.stringify({
+		gazzle.ws.send(JSON.stringify({
 			action: 'index page',
 			page: parseInt(page)
 		}))
@@ -241,21 +253,21 @@ $(function(){
 	$("#searchbox").keydown(function(event){
 		if (event.keyCode == 13) {
 			console.log("Searching " + $(this).val());
-			ws.send(JSON.stringify({
+			gazzle.ws.send(JSON.stringify({
 				action: 'search',
 				query: $(this).val()
 			}))
 		}
 	})
 	$("#crawl-start-btn").click(function(){
-		ws.send(JSON.stringify({
+		gazzle.ws.send(JSON.stringify({
 			action: 'start crawl',
 			page: $('#crawl-start-text').val()
 		}))
 	})
 
 	$("#crawl-toggle-btn").click(function(){
-		ws.send(JSON.stringify({
+		gazzle.ws.send(JSON.stringify({
 			action: 'toggle crawl'
 		}))
 	})
@@ -263,13 +275,13 @@ $(function(){
 	$("#index-toggle-btn").click(function(){
 		var btn = $("#index-toggle-btn");
 		if(btn.attr("data-toggle") == 'start'){
-			ws.send(JSON.stringify({
+			gazzle.ws.send(JSON.stringify({
 				action: 'start index'
 			}))
 			btn.attr('data-toggle', 'stop')
 			btn.html("Pause Indexing");
 		}else if(btn.attr("data-toggle") == 'stop'){
-			ws.send(JSON.stringify({
+			gazzle.ws.send(JSON.stringify({
 				action: 'stop index'
 			}))
 			btn.attr('data-toggle', 'start')
@@ -278,19 +290,19 @@ $(function(){
 	})
 
 	$("#index-clear-btn").click(function(){
-		ws.send(JSON.stringify({
+		gazzle.ws.send(JSON.stringify({
 			action: 'clear index'
 		}))
 	})
 
 	$("#frontier-clear-btn").click(function(){
-		ws.send(JSON.stringify({
+		gazzle.ws.send(JSON.stringify({
 			action: 'clear frontier'
 		}))
 	})
 
 	$("#all-clear-btn").click(function(){
-		ws.send(JSON.stringify({
+		gazzle.ws.send(JSON.stringify({
 			action: 'clear all'
 		}))
 	})
