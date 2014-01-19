@@ -203,6 +203,10 @@ table th{
 	padding: 5px;
 }
 
+.table.page .page.rank{
+	text-align: center;
+}
+
 .table.page .icon.add {
 	color: green;
 	cursor: pointer;

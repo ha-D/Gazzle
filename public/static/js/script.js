@@ -132,7 +132,9 @@ gazzle.parseMessage = function(mes){
 		$(index).attr('data-page', page.page_id);
 		$(pagerank).addClass('page rank');
 		if(page.rank != null){
-			$(pagerank).html(page.rank)
+			$(pagerank).html(page.rank);
+		}else{
+			$(pagerank).html("-");
 		}
 		$(tr).addClass('page ' + page.page_id);
 		$(tr).append(title);
