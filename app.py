@@ -34,7 +34,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         elif mes.get('action') == 'clear all':
             gazzle.clear_all()
         elif mes.get('action') == 'search':
-            gazzle.search(socket = self, query = mes['query'])
+            gazzle.search(socket = self, query = mes['query'], rank_part= mes.get('rank', 0))
  
     def on_close(self):
         gazzle.remove_socket(self)

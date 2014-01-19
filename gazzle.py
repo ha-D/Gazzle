@@ -4,6 +4,8 @@ from Queue import Queue, LifoQueue
 from whoosh.index import create_in, open_dir
 from whoosh.fields import *
 from whoosh.qparser import QueryParser
+from numpy.linalg import eig as eigen_vector
+from numpy import dot
 import os, re, time, threading, urllib2, json
 
 class Gazzle(object):
@@ -81,19 +83,57 @@ class Gazzle(object):
 			time.sleep(1)
 
 	def _pagerank(self):
-		while True
+		while True:
 			with self.pagerank_cond:
 				self.pagerank_cond.wait()
 			pages = self.pages.find({'crawled': True, 'indexed': True}, {
 				'_id':False,
-				'page_id': True,
 				'content': False,
-				'links':True,
 				'links.url': False
 			})
 
+			RANK_SCALE = 1
+			ALPHA = 0.25
 
+			page_count = pages.count()
 
+			id_to_ind = {}
+			ind_to_id = []
+			for page in pages:
+				ind = len(id_to_ind)
+				ind_to_id.append(page['page_id'])
+				id_to_ind[page['page_id']] = ind
+
+			pages.rewind()
+			pmat = []
+			for page in pages:
+				row = [0.0] * page_count
+				link_count = 0
+				for link in page['links']:
+					if link['page_id'] in id_to_ind:
+						ind = id_to_ind[link['page_id']]
+						row[ind] += RANK_SCALE
+						link_count += 1
+				alph = ALPHA * RANK_SCALE / page_count
+				for ind in range(page_count):
+					row[ind] *= (1 - alph) / link_count
+					row[ind] += alph / page_count
+				pmat.append(row)
+
+			page_rank = [0] * page_count
+			page_rank[0] = 1
+			for d in range(30):
+				page_rank = dot(page_rank, pmat)
+
+			result = [{"page_id": ind_to_id[x], "rank": "%.2f" % (page_rank[x] * 10)} for x in range(page_count)]
+
+			self._send_to_all({
+				'action': 'page rank',
+				'pages': result
+			})
+
+			for ind in range(page_count):
+				self.pages.update({"page_id": ind_to_id[ind]}, {"$set": {"rank": self._format_rank(page_rank[ind])}}, upsert=False)
 
 	def _index(self):
 		_ = {
@@ -178,17 +218,18 @@ class Gazzle(object):
 
 				result_links = []
 				for link in links:
-					if link in self.pageset:
-						continue
-					page_id = len(self.pageset)
-					self.pages.insert({
-						'page_id': page_id,
-						'url': link,
-						'crawled': False,
-						'indexed': False
-					})
-					self.pageset[link] = page_id
-					self.frontier.put(page_id)
+					if link not in self.pageset:
+						page_id = len(self.pageset)
+						self.pages.insert({
+							'page_id': page_id,
+							'url': link,
+							'crawled': False,
+							'indexed': False
+						})
+						self.pageset[link] = page_id
+						self.frontier.put(page_id)
+					else:
+						page_id = self.pageset[link]
 					result_links.append({'url': link, 'page_id': page_id})
 
 
@@ -235,13 +276,51 @@ class Gazzle(object):
 			# print("link %s %s going to %s" % (href, "",  ""))
 			return m.group(1) + href
 
-	def search(self, socket, query):
+
+
+	def search(self, socket, query, rank_part=0):
+		def sort_results(results):
+			scores = {}
+			max_score = 0
+			max_rank = 0
+			for res in results:
+				scores[res.fields()['page_id']] = res.score
+				if res.score > max_score: max_score = res.score
+
+			page_ids = map(lambda x: x.fields()['page_id'], results)
+			pages = self.pages.find({"page_id": {"$in": page_ids}}, {"title": True, "page_id":True, "rank":True})
+			pages = map(lambda x: dict(x), pages)
+			for page in pages:
+				if 'rank' not in page:
+					page['rank'] = 0
+				if page['rank'] > max_rank:
+					max_rank = page['rank']
+
+			for page in pages:
+				del page['_id']
+				rank = 1 - page['rank'] / float(max_rank)
+				score = scores[page['page_id']] / float(max_score)
+
+				final_score = rank * (rank_part / 100.0) + score * (1 - rank_part / 100.0)
+				page['score'] = final_score
+
+			pages.sort(key = lambda x: x['score'])
+			return pages
+
+
 		with self.index.searcher() as searcher:
 			parser = QueryParser("content", self.index.schema)
 			parsed_query = parser.parse(query)
 			results = searcher.search(parsed_query)
 
-			results = map(lambda x: dict(x), results)
+			if len(results) > 0:
+				print("found some")
+				print(len(results))
+				results = sort_results(results)
+			else:
+				results = []
+
+			# results = map(lambda x: dict(x), results)
 			print(results)
 			socket.write_message(json.dumps({
 				'action': 'search results',
@@ -280,6 +359,11 @@ class Gazzle(object):
 			'indexing': False
 		}))	
 
+	def _format_rank(self, rank):
+		if rank == None:
+			return None
+		return "%.2f" % (rank * 10)
+
 	def _send_to_all(self, message):
 		if type(message) != str:
 			message = json.dumps(message)
@@ -295,8 +379,8 @@ class Gazzle(object):
 
 	def add_socket(self, socket):
 		self.sockets.append(socket)
-		pages = self.pages.find({'crawled': True}, {'_id': False, 'page_id':True, 'url': True, 'title': True, 'indexed': True})
-		pages = map(lambda x: {'page_id': x['page_id'], 'title': x['title'], 'url': x['url'], 'indexed': x['indexed']}, pages)
+		pages = self.pages.find({'crawled': True}, {'_id': False, 'page_id':True, 'url': True, 'title': True, 'indexed': True, 'rank': True})
+		pages = map(lambda x: {'page_id': x['page_id'], 'title': x['title'], 'url': x['url'], 'indexed': x['indexed'], 'rank': self._format_rank(x.get('rank'))}, pages)
 		socket.write_message(json.dumps({
 			'action': 'init',
 			'pages': pages,

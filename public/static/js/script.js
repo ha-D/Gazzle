@@ -113,6 +113,7 @@ gazzle.parseMessage = function(mes){
 		var tr = document.createElement('tr');
 		var title = document.createElement('td');
 		var index = document.createElement('td');
+		var pagerank = document.createElement('td');
 		var a = document.createElement('a');
 		$(a).attr('href', page.url);
 		$(a).html(page.title);
@@ -129,9 +130,14 @@ gazzle.parseMessage = function(mes){
 		}
 		$(index).html(icon);
 		$(index).attr('data-page', page.page_id);
+		$(pagerank).addClass('page rank');
+		if(page.rank != null){
+			$(pagerank).html(page.rank)
+		}
 		$(tr).addClass('page ' + page.page_id);
 		$(tr).append(title);
 		$(tr).append(index);
+		$(tr).append(pagerank);
 		$('.table.page tbody').prepend($(tr));
 	}
 
@@ -211,6 +217,11 @@ gazzle.parseMessage = function(mes){
 				$("#crawl-toggle-btn").html("Resume Crawling");
 			}
 		}
+
+	} else if(mes.action == 'page rank'){
+		pageAction(mes, function(page){
+			$(".page." + page.page_id+" .rank").html(page.rank);
+		})
 	}
 }
 $(function(){
@@ -255,7 +266,8 @@ $(function(){
 			console.log("Searching " + $(this).val());
 			gazzle.ws.send(JSON.stringify({
 				action: 'search',
-				query: $(this).val()
+				query: $(this).val(),
+				rank: parseInt($("#pagerank-range").val())
 			}))
 		}
 	})
@@ -305,6 +317,10 @@ $(function(){
 		gazzle.ws.send(JSON.stringify({
 			action: 'clear all'
 		}))
+	})
+
+	$("#pagerank-range").change(function(){
+		$("#pagerank-text").html($("#pagerank-range").val() + "%");
 	})
 })
 
