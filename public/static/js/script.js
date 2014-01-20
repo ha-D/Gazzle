@@ -207,17 +207,23 @@ gazzle.parseMessage = function(mes){
 	} else if(mes.action == 'search results'){
 		var resultList = $("#results");
 		resultList.html("");
+		$(".results").show();
 		if(mes.results.length){
 			for(var i = 0; i < mes.results.length; i++){
 				var li = $("<li>");
 				var a = $("<a>");
+				var span = $("<span>");
+				var small = $('<small>');
 				a.attr('href', mes.results[i].url);
 				a.html(mes.results[i].title);
-				li.html(a);
+				span.html(a);
+				small.html(mes.results[i].url).addClass('result-small-url');
+				span.append(": "+small);
+				li.html(span);
 				resultList.append(li);
 			}
 		}else{
-			resultList.html("<div class='ui error message'>Did not match any indexed document.</div>");
+			resultList.html("<div style='margin-left:-2.3em' class='ui error message'>Did not match any indexed document.</div>");
 		}
 		
 	} else if(mes.action == 'init'){

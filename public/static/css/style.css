@@ -344,14 +344,27 @@ table th{
 	color: #00a65a;
 }	
 
+.results{
+	width: 80%;
+	margin-left: 2.5em !important;
+}
 
+.result-small-url{
+	color: #006621;
+}
 
+#results li{
+	margin-bottom: 0.25em;
+}
 
 /*
 	MEDIA QUERIES:
 */
 
 @media all and (max-width: 983px){
+	.status{
+		margin-top: 1em;
+	}
 	.menu-status{
 		display: block;
 	}
