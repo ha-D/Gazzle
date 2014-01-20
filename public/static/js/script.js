@@ -356,6 +356,8 @@ $(function(){
 	$("#clear-form").click(function(){
 		$("#pagerank-text").html("50%");	
 	})
+
+	// $(".results").hide();
 })
 
 
