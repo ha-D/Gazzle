@@ -188,7 +188,7 @@ gazzle.parseMessage = function(mes){
 				resultList.append(li);
 			}
 		}else{
-			alert('no result modafucka')
+			alert('no result')
 			resultList.html("<div class='ui error message'>Did not match any indexed document.</div>");
 		}
 		
@@ -208,17 +208,24 @@ gazzle.parseMessage = function(mes){
 		if(mes.indexing !== undefined){
 			if(mes.indexing){
 				$("#index-toggle-btn").html("Pause Indexing");
+				$('#whole-status').html('Start Indexing...').addClass('start active').removeClass('stop');
+				$('#whole-status-loader').show();
 			}else{
 				$("#index-toggle-btn").html("Resume Indexing");
+				$('#whole-status').html('doing nothing...').removeClass('stop start active');
+				$('#whole-status-loader').hide();
 			}
 		}
 		if(mes.crawling !== undefined){
 			if(mes.crawling){
 				$("#crawl-toggle-btn").html("Pause Crawling");
 				$("#crawl-status").html("Crawling...");
+				$('#whole-status').html('Crawling...').addClass('start active').removeClass('stop');
 			}else{
 				$("#crawl-status").html("Crawling Paused");
 				$("#crawl-toggle-btn").html("Resume Crawling");
+				$('#whole-status').html('doing nothing...').removeClass('stop active start');
+				$('#whole-status-loader').hide();
 			}
 		}
 
@@ -281,6 +288,8 @@ $(function(){
 		}
 	})
 	$("#crawl-start-btn").click(function(){
+		$('#whole-status').html('Crawling...').addClass('start active');
+		$('#whole-status-loader').show();
 		gazzle.ws.send(JSON.stringify({
 			action: 'start crawl',
 			page: $('#crawl-start-text').val()
@@ -288,6 +297,13 @@ $(function(){
 	})
 
 	$("#crawl-toggle-btn").click(function(){
+		if($('#whole-status.active').length){
+			$('#whole-status').html('Pause Crawling...').addClass('stop active').removeClass('start');
+			$('#whole-status-loader').show();
+		}else{
+			$('#whole-status').html('Resume Crawling...').addClass('start active').removeClass('stop');
+			$('#whole-status-loader').show();
+		}
 		gazzle.ws.send(JSON.stringify({
 			action: 'toggle crawl'
 		}))
@@ -296,12 +312,16 @@ $(function(){
 	$("#index-toggle-btn").click(function(){
 		var btn = $("#index-toggle-btn");
 		if(btn.attr("data-toggle") == 'start'){
+			$('#whole-status').html('Start Indexing...').addClass('start active').removeClass('stop');
+			$('#whole-status-loader').show();
 			gazzle.ws.send(JSON.stringify({
 				action: 'start index'
 			}))
 			btn.attr('data-toggle', 'stop')
 			btn.html("Pause Indexing");
 		}else if(btn.attr("data-toggle") == 'stop'){
+			$('#whole-status').html('Pause Indexing...').addClass('stop active').removeClass('start');
+			$('#whole-status-loader').show();
 			gazzle.ws.send(JSON.stringify({
 				action: 'stop index'
 			}))
@@ -330,6 +350,10 @@ $(function(){
 
 	$("#pagerank-range").change(function(){
 		$("#pagerank-text").html($("#pagerank-range").val() + "%");
+	})
+
+	$("#clear-form").click(function(){
+		$("#pagerank-text").html("50%");	
 	})
 })
 

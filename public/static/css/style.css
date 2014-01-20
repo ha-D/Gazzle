@@ -114,6 +114,9 @@ a .home-item{
 .main-content .navigator{
 	margin-bottom: 2em;
 }
+.main-content{
+	margin-bottom: 5em;
+}
 
 .main-content .clr{
 	margin: 1em;
@@ -145,7 +148,7 @@ a .home-item{
 	position: absolute !important;
 	overflow-y: auto;
 	right: 0;
-	top: 0;
+	top: 4em;
 	max-height: 20em;
 	min-height: 5em;
 	width: 45%
@@ -177,9 +180,6 @@ table th{
 	width: 100%;
 }
 
-.other{
-	margin-top: 3em;
-}
 
 .search-buttons{
 	position: absolute;
@@ -196,6 +196,7 @@ table th{
 .search-input, .index-button{
 	margin: 0em 0 0 2em !important;
 }
+
 
 .search-input{
 	width: 20em;
@@ -288,8 +289,30 @@ table th{
 }
 
 #pagerank-title {
-	font-size: 20px;
+	font-size: 1.1em;
+	color: #108edc;
 	font-weight: bold;
-	padding: 10px;
-	margin-bottom: 15px;
+	padding: 0.5em;
+	/*margin-bottom: 15px;*/
 }
+
+.status .content{
+	display: inline-block;
+	color: #96904D;
+	margin: 0 0.5em 3em 0.5em;
+}
+
+.status .header{
+	display: inline-block;
+	font-size: 1.1em;
+	color: #333;
+
+}
+
+.status .content.active.stop{
+	color: #f56954;
+}
+
+.status .content.active.start{
+	color: #00a65a;
+}	

@@ -1,11 +1,11 @@
 
 0- Retriever:
-	@ask hadi: search options?! -> query, pageRank,..
-	- advanced result: add button an id and shit
+	@ask hadi: search options?! -> query, pageRank,.. done
+	- advanced result: add button an id and shit -> ???
 	- 100% : done
-	- better ui : done(needs @) 
-	- results as_table : 
-	- show message when there's no result : 
+	- better ui : done
+	- results as_table :  
+	- show message when there's no result : done 
 1- stop/resume reconnecting
 2- load
 3- change error display style

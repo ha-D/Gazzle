@@ -49,8 +49,8 @@
 	</script>
 </head>
 <body>
-	<a href="https://github.com/ha-D/Gazzle"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
-	<div class="alert stack">
+	<!-- <a href="https://github.com/ha-D/Gazzle"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	<div class="alert stack"> -->
 	</div>
 	<div class="page-cont">
 		<div class="body">
@@ -116,6 +116,11 @@
 						</div></a>
 					</div>
 					<div class="main-content other" style="display:none">
+						<div class='status'>
+							<div class='header'>Current Status: </div>
+							<div class='content' id='whole-status'>doing nothing...</div>
+							<i class='icon loading' id='whole-status-loader' style='display:none'></i>
+						</div>
 						<div class="left-content Crawler" style="display:none">
 							<div class="clr"></div>
 							<span>Here we crawl stuff.Give us a URL,and se what happens:</span>
@@ -163,21 +168,24 @@
 							  <input id="searchbox" type="text" placeholder="Search...">
 							  <i class="search icon"></i>
 							</div>
-							 <span class="rf-link" id="advanced-search" >Advanced Search</span>
+							 <span class="rf-link" id="advanced-search" >PageRank Filter</span>
 
 				            <div class="advanced-search-panel ui segment form">
 				                <div class="container">
 				                    <div class="advanced_search_form">
-				                    	<div id="pagerank-title">
-											<span > Page Rank </span> <span id="pagerank-text"></span>
-											
-										</div>
-										<input type="range" min="0" max="100" id="pagerank-range"> 
-				                    
-										<div class='search-buttons'>
-											<input class="tiny ui left attached red button" type='reset' value="Clear">
-											<div class="tiny right attached ui facebook button">Submit</div>
-										</div>
+				                    	<form>
+					                    	<div id="pagerank-title">
+												<span > Page Rank: </span> <span id="pagerank-text">50%</span>
+												
+											</div>
+											<input type="range" min="0" max="100" id="pagerank-range"> 
+					                    	<div class="clr"></div>
+					                    	<small><span style='color:#f56954'>Note: </span>The number shows importance of pageRank in retrieving results</small>
+											<div class='search-buttons'>
+												<input class="tiny ui left attached red button" type='reset' value="Clear" id='clear-form'>
+												<div class="tiny right attached ui facebook button">Submit</div>
+											</div>
+										</form>
 				                    </div>
 				                </div>
 				            </div>
