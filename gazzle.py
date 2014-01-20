@@ -34,6 +34,9 @@ class Gazzle(object):
 		self.index_cond = threading.Condition()
 		self.index_lock = threading.RLock()
 		self._init_index()
+		self._index_size()
+
+		self.crosssite_crawl = False
 
 		self.pagerank_cond = threading.Condition()
 		self._start_thread(target = self._crawl, count = 3)
@@ -65,7 +68,7 @@ class Gazzle(object):
 		print('Added %d pages to index queue' % self.index_q.qsize())
 
 	def _init_whoosh(self, clear = False):
-		schema = Schema(page_id=STORED, title=TEXT(stored=True), content=TEXT, url=ID(stored=True), rank=NUMERIC(stored=True, numtype=float))
+		schema = Schema(page_id=STORED, title=TEXT(stored=True), content=TEXT, url=ID(stored=True))
 		if not os.path.exists("index"):
 	   		os.mkdir("index")
 	   		clear = True
@@ -160,6 +163,12 @@ class Gazzle(object):
 					self.pages.update({'page_id' : {'$in': need_tmp}}, {'$set':	{'indexed': True}}, multi = True, upsert = False)
 					with self.pagerank_cond:
 						self.pagerank_cond.notify()
+
+					self._send_to_all({
+						'action': 'index size',
+						'value': self.index_size
+					})
+
 				time.sleep(5)
 
 		self._start_thread(target = flush, kwargs={'_':_})
@@ -208,7 +217,9 @@ class Gazzle(object):
 			page = urllib2.urlopen(item['url'])
 			soup = BeautifulSoup(page.read())
 
-			title = soup.title.text.replace(' - Wikipedia, the free encyclopedia', '')
+			title = soup.title.text #.replace(' - Wikipedia, the free encyclopedia', '')
+			if len(title) > 12:
+				title = title[:12] + '...'
 			body  = soup.body.text
 			links = map(lambda link: self.extract_anchor_link(link, item['url']), soup.find_all("a"))
 			links = filter(lambda link: link != '' and link != None, links)
@@ -352,19 +363,23 @@ class Gazzle(object):
 		self._init_crawl()
 		self.indexing = False
 		self.crawling = False
+		self.index_size = 0
+		self.crosssite_crawl = False
 		self._send_to_all(json.dumps({
 			'action': 'init',
 			'pages': [],
 			'frontier_size': 0,
 			'crawl_size': 0,
+			'index_size': 0,
 			'crawling': False,
-			'indexing': False
+			'indexing': False,
+			'crosssite_crawl': False
 		}))	
 
 	def _format_rank(self, rank):
 		if rank == None:
 			return None
-		return "%.2f" % (math.log(rank + 1) * 1000)
+		return "%.2f" % (math.log(rank + 1) * 100)
 
 	def _send_to_all(self, message):
 		if type(message) != str:
@@ -378,6 +393,10 @@ class Gazzle(object):
 			thread.setDaemon(True)
 			thread.start()	
 
+	def _index_size(self):
+		self.index_size = sum(os.path.getsize('index/'+f) for f in os.listdir('index') if os.path.isfile('index/'+f))
+		print("Index Size: %d" % self.index_size)
+		return self.index_size
 
 	def add_socket(self, socket):
 		self.sockets.append(socket)
@@ -388,8 +407,10 @@ class Gazzle(object):
 			'pages': pages,
 			'frontier_size': self.frontier.qsize(),
 			'crawl_size': self.crawlCount,
+			'index_size': self.index_size,
 			'crawling': self.crawling,
-			'indexing': self.indexing
+			'indexing': self.indexing,
+			'crosssite_crawl': self.crosssite_crawl
 		}))
 
 	def remove_socket(self, socket):
@@ -441,3 +462,13 @@ class Gazzle(object):
 			self.index_alt_switchoff = not self.indexing
 			self.indexing = True
 			self.index_cond.notifyAll()
+
+	def toggle_crosssite_crawl(self, state=None):
+		if state == None:
+			self.crosssite_crawl = not self.crosssite_crawl
+		else:
+			self.crosssite_crawl = state
+		self._send_to_all({
+			'action': 'init',
+			'crosssite_crawl': self.crosssite_crawl
+		})

@@ -35,6 +35,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             gazzle.clear_all()
         elif mes.get('action') == 'search':
             gazzle.search(socket = self, query = mes['query'], rank_part= mes.get('rank', 0))
+        elif mes.get('action') == 'crossdomain crawl':
+            gazzle.toggle_crosssite_crawl(state = mes.get('value'))
  
     def on_close(self):
         gazzle.remove_socket(self)

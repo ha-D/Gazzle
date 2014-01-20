@@ -32,6 +32,7 @@ gazzle.connect = function(reconnectTime){
 	gazzle.socket = gazzle.ws;
 	gazzle.frontierSize = 0;
 	gazzle.crawlSize = 0;
+	gazzle.indexSize = 0;
 
 	var ws = gazzle.ws;
 
@@ -73,10 +74,30 @@ gazzle.connect = function(reconnectTime){
 	}
 }
 
+gazzle.getIndexSize = function (){
+	return gazzle.currentIndexSize | 0;
+}
+
+gazzle.setIndexSize  = function(val){
+	gazzle.currentIndexSize = val;
+	if(val > 1000000){
+		val = (val/1000000).toFixed(2) + " MB"
+	}else if(val > 1000){
+		val = (val/1000).toFixed(2) + " KB"
+	}else{
+		val = val + " B"
+	}
+	$("#index-size").html(val)
+}
 gazzle.startIncreaseThread = function(){
 	function increaseThread(){
-		function increase(elem, size){
-			var c = parseInt(elem.html())
+		function increase(elem, size, get, set){
+			var c;
+			if(get)
+				c = get();
+			else
+			    c = parseInt(elem.html());
+
 			var step = 13;
 			if(size - c > 100){
 				step = parseInt((size - c) / 8);
@@ -92,10 +113,14 @@ gazzle.startIncreaseThread = function(){
 				if(c < size)
 					c = size;
 			}
-			elem.html(c);
+			if(set)
+				set(c)
+			else
+				elem.html(c);
 		}
 		increase($("#frontier-size"), gazzle.frontierSize);
 		increase($("#crawl-size"), gazzle.crawlSize);
+		increase($("#index-size"), gazzle.indexSize, gazzle.getIndexSize, gazzle.setIndexSize);
 		// setTimeout(increaseThread, 100);
 	}
 	setInterval(increaseThread, 100)
@@ -149,6 +174,9 @@ gazzle.parseMessage = function(mes){
 
 	}else if(mes.action == 'crawl size'){
 		gazzle.crawlSize = mes.value;
+
+	}else if(mes.action == 'index size'){
+		gazzle.indexSize = mes.value;
 
 	}else if(mes.action == 'crawl current'){
 		$("#current-crawl").html(mes.page);
@@ -205,6 +233,10 @@ gazzle.parseMessage = function(mes){
 			gazzle.crawlSize = mes.crawl_size;
 			$("#crawl-size").html(gazzle.crawlSize);
 		}
+		if(mes.index_size !== undefined){
+			gazzle.indexSize = mes.index_size;
+			gazzle.setIndexSize(gazzle.indexSize);
+		}
 		if(mes.indexing !== undefined){
 			if(mes.indexing){
 				$("#index-toggle-btn").addClass('red').removeClass('blue');
@@ -232,6 +264,12 @@ gazzle.parseMessage = function(mes){
 				$('#whole-status-loader').hide();
 			}
 		}
+		if(mes.crosssite_crawl !== undefined){
+			if (mes.crosssite_crawl)
+				$(".crossdomain.checkbox").checkbox('enable');
+			else
+				$(".crossdomain.checkbox").checkbox('disable');
+		}
 
 	} else if(mes.action == 'page rank'){
 		pageAction(mes, function(page){
@@ -249,7 +287,7 @@ $(function(){
 			$(d).html($(d).html().substring(0,20)+ '...');
 	});
 
-	$('.ui.checkbox').checkbox();
+
 
 	$('.advanced-search-panel').hide();
         $('#advanced-search').click(function () {
@@ -361,6 +399,26 @@ $(function(){
 	$("#clear-form").click(function(){
 		$("#pagerank-text").html("50%");	
 	})
+
+	$('.ui.checkbox').checkbox();
+
+	$('.ui.checkbox').click(function(){
+		if($("#cross-domain")[0].checked){
+			gazzle.ws.send(JSON.stringify({
+				action: 'crossdomain crawl',
+				value: true
+			}))
+		}else{
+			gazzle.ws.send(JSON.stringify({
+				action: 'crossdomain crawl',
+				value: false
+			}))
+		}
+	})
+	// $(".checkbox.crossdomain").checkbox(onChange',function(e){
+	// 	console.log(e);
+	// 	console.log("FU")
+	// })
 
 	// $(".results").hide();
 })
