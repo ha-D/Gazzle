@@ -218,7 +218,8 @@ gazzle.parseMessage = function(mes){
 				a.html(mes.results[i].title);
 				span.html(a);
 				small.html(mes.results[i].url).addClass('result-small-url');
-				span.append(": "+small);
+				span.append(": ");
+				span.append(small);
 				li.html(span);
 				resultList.append(li);
 			}
@@ -421,12 +422,15 @@ $(function(){
 			}))
 		}
 	})
-	// $(".checkbox.crossdomain").checkbox(onChange',function(e){
-	// 	console.log(e);
-	// 	console.log("FU")
-	// })
-
-	// $(".results").hide();
+	
+	$('#pr-submit-btn').click(function(){
+		console.log("Searching " + $(this).val());
+		gazzle.ws.send(JSON.stringify({
+			action: 'search',
+			query: $(this).val(),
+			rank: parseInt($("#pagerank-range").val())
+		}))
+	})
 })
 
 

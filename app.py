@@ -50,7 +50,7 @@ application = tornado.web.Application([
 ])
  
 if __name__ == "__main__":
-    gazzle = Gazzle()
+    gazzle = Gazzle(crawl_threads=3)
 
     port = 3300
     http_server = tornado.httpserver.HTTPServer(application)

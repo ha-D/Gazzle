@@ -19,6 +19,8 @@ class Gazzle(object):
 		self._init_whoosh()
 
 		self.pageset = {}
+		self.crawl_thread_count = kwargs.get('crawl_threads', 3)
+		self.pending_crawls = 0
 		self.frontier = Queue()
 		self.crawlCount = 0
 		self.crawling = False
@@ -39,7 +41,7 @@ class Gazzle(object):
 		self.crosssite_crawl = False
 
 		self.pagerank_cond = threading.Condition()
-		self._start_thread(target = self._crawl, count = 3)
+		self._start_thread(target = self._crawl, count = self.crawl_thread_count)
 		self._start_thread(target = self._index, count = 1) # index writer doesn't support multithreading
 		self._start_thread(target = self._pagerank, count = 1)
 		self._start_thread(target = self._assert_thread, count=1)
@@ -175,7 +177,7 @@ class Gazzle(object):
 
 		while True:
 			with self.index_cond:
-				while not self.indexing:
+				while not self.indexing or self.pending_crawls != 0:
 					self.index_cond.wait()
 			try:
 				item_index = self.index_altq.get(False)
@@ -278,8 +280,9 @@ class Gazzle(object):
 		if href == '':
 			return ''
 
-		# if 'https://' in href:
-		# 	return href.replace('https://', 'http://')
+		if 'https://' in href:
+			href = href.replace('https://', 'http://')
+
 		if re.match('#.*', href) != None:
 			return ''
 		elif re.match('//.*', href):
@@ -288,6 +291,10 @@ class Gazzle(object):
 			m = re.match('(http://[0-9a-zA-Z.]+)/*', url)
 			# print("link %s %s going to %s" % (href, "",  ""))
 			return m.group(1) + href
+		elif self.crosssite_crawl:
+			return href
+		return ''
+
 
 
 
