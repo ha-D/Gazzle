@@ -184,9 +184,13 @@ gazzle.parseMessage = function(mes){
 			for(var i = 0; i < mes.results.length; i++){
 				var li = $("<li>");
 				var a = $("<a>");
+				var span = $("<span>");
+				var small = $('<small>');
 				a.attr('href', mes.results[i].url);
 				a.html(mes.results[i].title);
-				li.html(a);
+				span.html(a);
+				small.html(mes.results[i].url).addClass('result-small-url');
+				span.append(": "+samll);
 				resultList.append(li);
 			}
 		}else{

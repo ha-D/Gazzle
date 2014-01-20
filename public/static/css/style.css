@@ -349,7 +349,9 @@ table th{
 	margin-left: 2.5em !important;
 }
 
-
+.result-small-url{
+	color: #006621;
+}
 
 /*
 	MEDIA QUERIES:
