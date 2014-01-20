@@ -8,7 +8,7 @@
 	<link rel="stylesheet" type="text/css" href="static/css/style.css">
 	<link rel="shortcut icon" type="image/x-icon" href="static/images/gaz.ico">
 
-	<link href='http://fonts.googleapis.com/css?family=Alegreya+Sans|Chango' rel='stylesheet' type='text/css'>
+	<!-- <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans|Chango' rel='stylesheet' type='text/css'> -->
 	   
 	<script type="text/javascript" src="static/js/jquery.js"></script>
 	<script type="text/javascript" src="static/js/davis.js"></script>
@@ -50,7 +50,9 @@
 	</script>
 </head>
 <body>
+
 	<a href="https://github.com/ha-D/Gazzle"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+
 	<div class="alert stack">
 	</div>
 	<div class="page-cont">
@@ -165,13 +167,13 @@
 						</div>
 						<div class="left-content Retriever" style="display:none">
 							<div class="clr"></div>
-							<span>please, search something:</span>
+							<!-- <span>please, search something:</span> -->
 							<div class="clr"></div>
-							<div class="ui icon input search-input">
+							<div class="ui icon input big search-input">
 							  <input id="searchbox" type="text" placeholder="Search...">
 							  <i class="search icon"></i>
 							</div>
-							 <span class="rf-link" id="advanced-search" >PageRank Filter</span>
+							 <span class="rf-link" id="advanced-search" >PageRank</span>
 
 				            <div class="advanced-search-panel ui segment form">
 				                <div class="container">
@@ -193,12 +195,14 @@
 				                </div>
 				            </div>
 							<div class="clr"></div>
-							<span>Results:</span>
-							<table id="results" class='ui table segment'>
-								<!-- <li><a href="#">http://test.com</a></li>
-								<li><a href="#">http://test.ir</a></li>
-								<li><a href="#">http://test.org</a></li> -->
-							</table>
+							<div class="results">
+								<!-- <span>Results:</span> -->
+								<table id="results" class='ui table segment'>
+									<!-- <li><a href="#">http://test.com</a></li>
+									<li><a href="#">http://test.ir</a></li>
+									<li><a href="#">http://test.org</a></li> -->
+								</table>
+							</div>
 						</div>
 
 

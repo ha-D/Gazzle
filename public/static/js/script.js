@@ -11,6 +11,7 @@ gazzle.alert = function(mes, type, time){
 		alert.addClass(type);
 	alert.html(mes);
 	$('.alert.stack').prepend(alert);
+	console.log($('.alert.stack'));
 	setTimeout(function(){
 		alert.remove();
 	}, time)
@@ -355,6 +356,8 @@ $(function(){
 	$("#clear-form").click(function(){
 		$("#pagerank-text").html("50%");	
 	})
+
+	// $(".results").hide();
 })
 
 
