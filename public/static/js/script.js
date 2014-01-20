@@ -179,7 +179,7 @@ gazzle.parseMessage = function(mes){
 	} else if(mes.action == 'search results'){
 		var resultList = $("#results");
 		resultList.html("");
-		resultList.show();
+		$(".results").show();
 		if(mes.results.length){
 			for(var i = 0; i < mes.results.length; i++){
 				var li = $("<li>");
@@ -190,6 +190,7 @@ gazzle.parseMessage = function(mes){
 				resultList.append(li);
 			}
 		}else{
+			alert('no result')
 			resultList.html("<div class='ui error message'>Did not match any indexed document.</div>");
 		}
 		
