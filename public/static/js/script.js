@@ -190,8 +190,7 @@ gazzle.parseMessage = function(mes){
 				resultList.append(li);
 			}
 		}else{
-			alert('no result')
-			resultList.html("<div class='ui error message'>Did not match any indexed document.</div>");
+			resultList.html("<div style='margin-left:-2.3em' class='ui error message'>Did not match any indexed document.</div>");
 		}
 		
 	} else if(mes.action == 'init'){
