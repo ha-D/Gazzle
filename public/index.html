@@ -19,7 +19,8 @@
 
 		 this.configure(function(){
                     this.generateRequestOnPageLoad = true;
-        })
+        });
+
 		this.get('/:name', function(req){
 			$('.main-menu .menu-item').css('color','#333');
 		 	$('.main-content').hide();
@@ -34,7 +35,7 @@
 			}else{
 				$('.url-stats').show();
 			}
-		})
+		});
 		this.get('/', function(req){
 			document.title = 'Gazzle | Home';
 			$('.main-menu .menu-item').css('color','#333');
@@ -49,8 +50,8 @@
 	</script>
 </head>
 <body>
-	<!-- <a href="https://github.com/ha-D/Gazzle"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
-	<div class="alert stack"> -->
+	<a href="https://github.com/ha-D/Gazzle"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	<div class="alert stack">
 	</div>
 	<div class="page-cont">
 		<div class="body">
@@ -71,7 +72,9 @@
 							Retriever
 						</a>
 					</div>
-					<span>| <small><span id="status"> All rights reserved? Nah!</span></small></span>
+					<div class="menu-status">
+					<span>| <small><span id="status"></span></small></span>
+					</div>
 					
 				</div>
 			</div>

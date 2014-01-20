@@ -53,6 +53,10 @@ a, .rf-link{
 	margin-bottom: 2em;
 }
 
+.menu-status{
+	display: inline-block;
+}
+
 .menu-item{
 	font-size: 1.2em;
 	margin-right: 1em;
@@ -114,9 +118,6 @@ a .home-item{
 .main-content .navigator{
 	margin-bottom: 2em;
 }
-.main-content{
-	margin-bottom: 5em;
-}
 
 .main-content .clr{
 	margin: 1em;
@@ -137,6 +138,9 @@ a .home-item{
 .main-content{
 	position: relative;
 	z-index: 1;
+	margin-bottom: 8em;
+	overflow: hidden;
+
 }
 
 .url-stats h4{
@@ -316,3 +320,14 @@ table th{
 .status .content.active.start{
 	color: #00a65a;
 }	
+
+
+/*
+	MEDIA QUERIES:
+*/
+
+@media all and (max-width: 983px){
+	.menu-status{
+		display: block;
+	}
+}
