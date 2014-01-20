@@ -178,7 +178,7 @@ gazzle.parseMessage = function(mes){
 	} else if(mes.action == 'search results'){
 		var resultList = $("#results");
 		resultList.html("");
-		if(mes.results)
+		if(mes.results.length){
 			for(var i = 0; i < mes.results.length; i++){
 				var li = $("<li>");
 				var a = $("<a>");
@@ -187,8 +187,10 @@ gazzle.parseMessage = function(mes){
 				li.html(a);
 				resultList.append(li);
 			}
-		else
+		}else{
+			alert('no result modafucka')
 			resultList.html("<div class='ui error message'>Did not match any indexed document.</div>");
+		}
 		
 	} else if(mes.action == 'init'){
 		if(mes.pages !== undefined){
@@ -235,6 +237,11 @@ $(function(){
 			$(d).attr('title', $(d).html());
 			$(d).html($(d).html().substring(0,20)+ '...');
 	});
+
+	$('.advanced-search-panel').hide();
+        $('#advanced-search').click(function () {
+            $('.advanced-search-panel').slideToggle('slow');
+    });
 
 	$(".table.page").on('mouseenter', '.page.index.status', function(e){
 		var state = $(this).attr("data-status");

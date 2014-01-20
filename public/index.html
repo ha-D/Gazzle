@@ -29,6 +29,11 @@
 			document.title = 'Gazzle | '+p;
 			$('.left-content.'+p).show();
 			$('.main-menu .'+p).css('color','#108edc');
+			if(p=='Retriever'){
+				$('.url-stats').hide();
+			}else{
+				$('.url-stats').show();
+			}
 		})
 		this.get('/', function(req){
 			document.title = 'Gazzle | Home';
@@ -158,20 +163,31 @@
 							  <input id="searchbox" type="text" placeholder="Search...">
 							  <i class="search icon"></i>
 							</div>
+							 <span class="rf-link" id="advanced-search" >Advanced Search</span>
 
+				            <div class="advanced-search-panel ui segment form">
+				                <div class="container">
+				                    <div class="advanced_search_form">
+				                    	<div id="pagerank-title">
+											<span > Page Rank </span> <span id="pagerank-text"></span>
+											
+										</div>
+										<input type="range" min="0" max="100" id="pagerank-range"> 
+				                    
+										<div class='search-buttons'>
+											<input class="tiny ui left attached red button" type='reset' value="Clear">
+											<div class="tiny right attached ui facebook button">Submit</div>
+										</div>
+				                    </div>
+				                </div>
+				            </div>
 							<div class="clr"></div>
 							<span>Results:</span>
-							<ul id="results">
+							<table id="results" class='ui table segment'>
 								<!-- <li><a href="#">http://test.com</a></li>
 								<li><a href="#">http://test.ir</a></li>
 								<li><a href="#">http://test.org</a></li> -->
-							</ul>
-							<div class="ui segment">
-								<div id="pagerank-title">
-									<span > Page Rank </span> <span id="pagerank-text"></span>
-								</div>
-								<input type="range" min="0" max="100" id="pagerank-range"> 
-							</div>
+							</table>
 						</div>
 
 
