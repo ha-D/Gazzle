@@ -208,10 +208,12 @@ gazzle.parseMessage = function(mes){
 		}
 		if(mes.indexing !== undefined){
 			if(mes.indexing){
+				$("#index-toggle-btn").addClass('red').removeClass('blue');
 				$("#index-toggle-btn").html("Pause Indexing");
 				$('#whole-status').html('Start Indexing...').addClass('start active').removeClass('stop');
 				$('#whole-status-loader').show();
 			}else{
+				$("#index-toggle-btn").addClass('blue').removeClass('red');
 				$("#index-toggle-btn").html("Resume Indexing");
 				$('#whole-status').html('doing nothing...').removeClass('stop start active');
 				$('#whole-status-loader').hide();
@@ -219,10 +221,12 @@ gazzle.parseMessage = function(mes){
 		}
 		if(mes.crawling !== undefined){
 			if(mes.crawling){
+				$("#crawl-toggle-btn").addClass('red').removeClass('green');
 				$("#crawl-toggle-btn").html("Pause Crawling");
 				$("#crawl-status").html("Crawling...");
 				$('#whole-status').html('Crawling...').addClass('start active').removeClass('stop');
 			}else{
+				$("#crawl-toggle-btn").addClass('green').removeClass('red');
 				$("#crawl-status").html("Crawling Paused");
 				$("#crawl-toggle-btn").html("Resume Crawling");
 				$('#whole-status').html('doing nothing...').removeClass('stop active start');
