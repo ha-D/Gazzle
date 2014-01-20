@@ -6,7 +6,7 @@ from whoosh.fields import *
 from whoosh.qparser import QueryParser
 from numpy.linalg import eig as eigen_vector
 from numpy import dot
-import os, re, time, threading, urllib2, json
+import os, re, time, threading, urllib2, json, math
 
 class Gazzle(object):
 	def __init__(self, *args, **kwargs):
@@ -116,8 +116,11 @@ class Gazzle(object):
 						link_count += 1
 				alph = ALPHA * RANK_SCALE / page_count
 				for ind in range(page_count):
-					row[ind] *= (1 - alph) / link_count
-					row[ind] += alph / page_count
+					if link_count == 0:
+						row[ind] += 1 / page_count
+					else:
+						row[ind] *= (1 - alph) / link_count
+						row[ind] += alph / page_count
 				pmat.append(row)
 
 			page_rank = [0] * page_count
@@ -125,7 +128,7 @@ class Gazzle(object):
 			for d in range(30):
 				page_rank = dot(page_rank, pmat)
 
-			result = [{"page_id": ind_to_id[x], "rank": "%.2f" % (page_rank[x] * 10)} for x in range(page_count)]
+			result = [{"page_id": ind_to_id[x], "rank": self._format_rank(page_rank[x])} for x in range(page_count)]
 
 			self._send_to_all({
 				'action': 'page rank',
@@ -133,7 +136,7 @@ class Gazzle(object):
 			})
 
 			for ind in range(page_count):
-				self.pages.update({"page_id": ind_to_id[ind]}, {"$set": {"rank": self._format_rank(page_rank[ind])}}, upsert=False)
+				self.pages.update({"page_id": ind_to_id[ind]}, {"$set": {"rank": page_rank[ind]}}, upsert=False)
 
 	def _index(self):
 		_ = {
@@ -362,7 +365,7 @@ class Gazzle(object):
 	def _format_rank(self, rank):
 		if rank == None:
 			return None
-		return "%.2f" % (rank * 10)
+		return "%.2f" % (math.log(rank + 1) * 1000)
 
 	def _send_to_all(self, message):
 		if type(message) != str:

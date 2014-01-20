@@ -1,3 +1,15 @@
+@font-face {
+  font-family: 'Alegreya Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Alegreya Sans'), local('AlegreyaSans-Regular'), url('../fonts/AlegreyaSans.woff') format('woff');
+}
+@font-face {
+  font-family: 'Chango';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Chango Regular'), local('Chango-Regular'), url('../fonts/Chango.woff') format('woff');
+}
 
 /*font-family: 'Alegreya Sans', sans-serif; other */
 /*font-family: 'Chango', cursive; header*/
@@ -299,7 +311,7 @@ table th{
 .status .content{
 	display: inline-block;
 	color: #96904D;
-	margin: 0 0.5em 3em 0.5em;
+	margin: 0 0.5em 1em 0.5em;
 }
 
 .status .header{
