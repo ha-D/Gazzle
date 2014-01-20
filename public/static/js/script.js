@@ -190,7 +190,7 @@ gazzle.parseMessage = function(mes){
 				a.html(mes.results[i].title);
 				span.html(a);
 				small.html(mes.results[i].url).addClass('result-small-url');
-				span.append(": "+samll);
+				span.append(": "+small);
 				resultList.append(li);
 			}
 		}else{

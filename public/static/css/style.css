@@ -353,6 +353,10 @@ table th{
 	color: #006621;
 }
 
+#results li{
+	margin-bottom: 0.25em;
+}
+
 /*
 	MEDIA QUERIES:
 */
