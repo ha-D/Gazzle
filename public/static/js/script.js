@@ -246,6 +246,8 @@ $(function(){
 			$(d).html($(d).html().substring(0,20)+ '...');
 	});
 
+	$('.ui.checkbox').checkbox();
+
 	$('.advanced-search-panel').hide();
         $('#advanced-search').click(function () {
             $('.advanced-search-panel').slideToggle('slow');
