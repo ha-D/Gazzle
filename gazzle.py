@@ -1,11 +1,10 @@
-from pymongo import MongoClient
-from bs4 import BeautifulSoup
-from Queue import Queue, LifoQueue
-from whoosh.index import create_in, open_dir
-from whoosh.fields import *
+from pymongo 		import MongoClient
+from bs4 			import BeautifulSoup
+from Queue 			import Queue, LifoQueue
+from whoosh.index 	import create_in, open_dir
+from whoosh.fields 	import *
 from whoosh.qparser import QueryParser
-from numpy.linalg import eig as eigen_vector
-from numpy import dot
+from numpy 			import dot
 import os, re, time, threading, urllib2, json, math
 
 class Gazzle(object):
@@ -291,7 +290,7 @@ class Gazzle(object):
 				if res.score > max_score: max_score = res.score
 
 			page_ids = map(lambda x: x.fields()['page_id'], results)
-			pages = self.pages.find({"page_id": {"$in": page_ids}}, {"title": True, "page_id":True, "rank":True})
+			pages = self.pages.find({"page_id": {"$in": page_ids}}, {"title": True, "page_id":True, "rank":True, "url": True})
 			pages = map(lambda x: dict(x), pages)
 			for page in pages:
 				if 'rank' not in page:
