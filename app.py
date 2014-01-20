@@ -42,6 +42,9 @@ class WSHandler(tornado.websocket.WebSocketHandler):
  
 application = tornado.web.Application([
     (r'/ws', WSHandler),
+    # (r'/favicon.ico', tornado.web.StaticFileHandler, {'path': favicon_path}),
+    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'public/static/'}),
+    (r'/', tornado.web.StaticFileHandler, {'path': 'public/index.html'})
 ])
  
 if __name__ == "__main__":
