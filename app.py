@@ -3,9 +3,9 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.web
 import tornado.autoreload
-import json
 from datetime import datetime
 from gazzle import Gazzle
+import json, sys
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
@@ -42,22 +42,34 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         gazzle.remove_socket(self)
         print 'connection closed'
  
+class MainHandler(tornado.web.RequestHandler):
+    def get(self, x = None):
+        self.render("public/index.html")
+
 application = tornado.web.Application([
     (r'/ws', WSHandler),
     # (r'/favicon.ico', tornado.web.StaticFileHandler, {'path': favicon_path}),
     (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'public/static/'}),
-    (r'/', tornado.web.StaticFileHandler, {'path': 'public/index.html'})
+    (r'/(.*)', MainHandler)
 ])
  
 if __name__ == "__main__":
-    gazzle = Gazzle(crawl_threads=3)
+    port = 8000
+    if len(sys.argv) > 1:
+        try:
+            port = int(sys.argv[1])
+        except:
+            pass
 
-    port = 3300
+    # print("%s \tRunning on port %d" % (datetime.now(), port))
+    print("Running on port %d" % port)
+
+
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(port)
-
-    print("%s \tRunning on port %d" % (datetime.now(), port))
 
     io_loop = tornado.ioloop.IOLoop.instance()
     tornado.autoreload.start(io_loop = io_loop, check_time=5000)
     io_loop.start()
+
+    gazzle = Gazzle(crawl_threads=3)
