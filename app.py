@@ -64,6 +64,7 @@ if __name__ == "__main__":
     # print("%s \tRunning on port %d" % (datetime.now(), port))
     print("Running on port %d" % port)
 
+    gazzle = Gazzle(crawl_threads=3)
 
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(port)
@@ -71,5 +72,3 @@ if __name__ == "__main__":
     io_loop = tornado.ioloop.IOLoop.instance()
     tornado.autoreload.start(io_loop = io_loop, check_time=5000)
     io_loop.start()
-
-    gazzle = Gazzle(crawl_threads=3)
