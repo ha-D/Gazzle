@@ -21,6 +21,7 @@ class Gazzle(object):
 		self.pageset = {}
 		self.crawl_thread_count = kwargs.get('crawl_threads', 3)
 		self.pending_crawls = 0
+		self.pending_lock = threading.RLock()
 		self.frontier = Queue()
 		self.crawlCount = 0
 		self.crawling = False
@@ -177,8 +178,12 @@ class Gazzle(object):
 
 		while True:
 			with self.index_cond:
-				while not self.indexing or self.pending_crawls != 0:
+				with self.pending_lock:
+					pending = self.pending_crawls != 0
+				while not self.indexing or pending:
 					self.index_cond.wait()
+					with self.pending_lock:
+						pending = self.pending_crawls != 0
 			try:
 				item_index = self.index_altq.get(False)
 				if self.index_alt_switchoff:
@@ -208,10 +213,22 @@ class Gazzle(object):
 
 
 	def _crawl(self):
+		with self.pending_lock:
+				self.pending_crawls += 1
+
 		while True:
+			with self.pending_lock:
+				self.pending_crawls -= 1
+
 			with self.crawl_cond:
 				while not self.crawling:
+					if self.indexing:
+						with self.index_cond:
+							self.index_cond.notify()
 					self.crawl_cond.wait()
+
+			with self.pending_lock:
+				self.pending_crawls += 1
 
 			item_index = self.frontier.get(True)
 			item = self.pages.find_one({'page_id': item_index})
