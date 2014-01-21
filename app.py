@@ -54,7 +54,7 @@ application = tornado.web.Application([
 ])
  
 if __name__ == "__main__":
-    port = 8000
+    port = 3300
     if len(sys.argv) > 1:
         try:
             port = int(sys.argv[1])
